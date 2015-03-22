@@ -59,8 +59,8 @@ def bbc_rss(parameter):
 
     ofile.close()
 
-    if (report):
-        report += time.asctime()
+#    if (report):
+#        report += time.asctime()
 
     if (parameter == "new"):
         out = report

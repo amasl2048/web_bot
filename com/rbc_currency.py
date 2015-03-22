@@ -132,8 +132,8 @@ cross {16}: {17:.2f} {18:.2f}%
 corr {19}: {20:.2f}
 '''.format(*arr2)
 
-    if (report):
-        report += time.asctime()
+#    if (report):
+#        report += time.asctime()
 
     return report
 

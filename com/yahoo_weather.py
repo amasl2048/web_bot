@@ -61,21 +61,28 @@ def weather_report(parameter):
     if (last_file):
         if ( abs(temp_h_diff) > 7): report += "Temp. high diff: " + str(temp_h_diff) + " C\n"
         if ( abs(temp_l_diff) > 7): report += "Temp. low diff: " + str(temp_l_diff) + " C\n"
+	if ( (temp_l > 0) and (prev["temp_l"] < 0) ): report += "T loss up zero:" + str(temp_l) + " C\n"
+	if ( (temp_h > 0) and (prev["temp_h"] < 0) ): report += "T high up zero:" + str(temp_h) + " C\n"
+	if ( (temp_l < 0) and (prev["temp_l"] > 0) ): report += "T loss down zero:" + str(temp_l) + " C\n"
+	if ( (temp_h < 0) and (prev["temp_h"] > 0) ): report += "T high down zero:" + str(temp_h) + " C\n"
 
-    if ( diff > 10 ): report += "Temp. diff: " + str(diff) + " C\n"
+    if ( (temp_l < 0) and (temp_h > 0) ): report += "Temp. pass zero: " + str(temp_l) + ".." + str(temp_h) + " C\n"
+    if ( diff >= 15 ): report += "Temp. diff: " + str(diff) + " C\n"
 
-    if ( "Rain" in text ): report += "Condition: " + text + "\n"
+    conditions = ("Rain", "storm", "Shower")
+    for cond in conditions:
+    	if ( cond in text ): report += "Condition: " + text + "\n"
 
-    if ( (humidity < 20) or (humidity > 90) ): report += "Humidity: " + str(humidity) + " %\n"
+    if ( (humidity <= 30) or (humidity >= 95) ): report += "Humidity: " + str(humidity) + " %\n"
 
-    if ( (pressure < 735)  or (pressure > 765) ): report += "Pressure: " + str(pressure) + " mmHg\n"
+    if ( (pressure <= 735)  or (pressure >= 770) ): report += "Pressure: " + str(pressure) + " mmHg\n"
 
     if (last_file):
         if ( abs(pressure_diff) > 15 ): report += "Pressure diff: " + str(pressure_diff) + " mmHg\n"
 
-    if (chill < -5): report += "Chill: " + str(chill) + "\n"
+    if (chill <= -10): report += "Chill: " + str(chill) + "\n"
 
-    if (speed >= 10): report += "Wind: " + str(speed) + " m/s"
+    if (speed >= 7): report += "Wind: " + str(speed) + " m/s"
 
     #print report
 
@@ -105,4 +112,4 @@ speed: %s
 
     return out
 
-#weather_report("diff")
+#print weather_report("full")
