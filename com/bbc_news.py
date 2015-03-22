@@ -28,8 +28,13 @@ def bbc_rss(parameter):
 
     def txt2set(file):
         out = []
-        for l in open(file, 'r'):
-            out.append(l.strip())
+	try:
+            for l in open(file, 'r'):
+                out.append(l.strip())
+	except:
+	    open(file, 'w').close()
+	    print "Warning: empty file %s is created " % file
+	    print "Please add your keywords to my_words.txt in one column"
         return set(out)
 
     hashes = txt2set("hashes.txt") # old news md5 hashes 
@@ -59,8 +64,9 @@ def bbc_rss(parameter):
 
     ofile.close()
 
-#    if (report):
-#        report += time.asctime()
+    if (report):
+        print time.asctime()
+	print report
 
     if (parameter == "new"):
         out = report
@@ -69,5 +75,5 @@ def bbc_rss(parameter):
 
     return out
 
-#print bbc_rss("new")
+#bbc_rss("new")
 

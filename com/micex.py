@@ -4,6 +4,7 @@ import urllib, httplib
 from datetime import date
 from numpy import genfromtxt
 from StringIO import StringIO
+from time import asctime
 '''
 Get currency rates from micex.ru
   - send results over xmpp
@@ -66,9 +67,13 @@ def ex_rate(par):
 
     if (par == "changes"):
         if (not send): report = ""
-    
+
+    if report:
+	print asctime()
+	print report   
+   
     return report
 
-#print ex_rate("changes")
+#ex_rate("all")
 
 

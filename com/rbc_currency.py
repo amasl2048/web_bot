@@ -132,9 +132,10 @@ cross {16}: {17:.2f} {18:.2f}%
 corr {19}: {20:.2f}
 '''.format(*arr2)
 
-#    if (report):
-#        report += time.asctime()
+    if (report):
+        print time.asctime()
+	print report
 
     return report
 
-#print rbc_get("y")
+#rbc_get("m")

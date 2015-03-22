@@ -5,6 +5,7 @@
 import pywapi
 import yaml
 import sys
+from time import asctime
 
 def weather_report(parameter):
     '''
@@ -84,7 +85,9 @@ def weather_report(parameter):
 
     if (speed >= 7): report += "Wind: " + str(speed) + " m/s"
 
-    #print report
+    if report:
+	print asctime()
+	print report
 
     full_report = '''---
 date: %s
@@ -112,4 +115,4 @@ speed: %s
 
     return out
 
-#print weather_report("full")
+#weather_report("full")

@@ -36,4 +36,4 @@ else:
 
 if out:
     jabber_ru.send_xmpp(out)
-    print out
+    #print out
