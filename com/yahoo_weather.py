@@ -62,9 +62,9 @@ def weather_report(parameter):
     if (last_file):
         if ( abs(temp_h_diff) > 7): report += "Temp. high diff: " + str(temp_h_diff) + " C\n"
         if ( abs(temp_l_diff) > 7): report += "Temp. low diff: " + str(temp_l_diff) + " C\n"
-	if ( (temp_l > 0) and (prev["temp_l"] < 0) ): report += "T loss up zero:" + str(temp_l) + " C\n"
+	if ( (temp_l > 0) and (prev["temp_l"] < 0) ): report += "T low up zero:" + str(temp_l) + " C\n"
 	if ( (temp_h > 0) and (prev["temp_h"] < 0) ): report += "T high up zero:" + str(temp_h) + " C\n"
-	if ( (temp_l < 0) and (prev["temp_l"] > 0) ): report += "T loss down zero:" + str(temp_l) + " C\n"
+	if ( (temp_l < 0) and (prev["temp_l"] > 0) ): report += "T low down zero:" + str(temp_l) + " C\n"
 	if ( (temp_h < 0) and (prev["temp_h"] > 0) ): report += "T high down zero:" + str(temp_h) + " C\n"
 
     if ( (temp_l < 0) and (temp_h > 0) ): report += "Temp. pass zero: " + str(temp_l) + ".." + str(temp_h) + " C\n"

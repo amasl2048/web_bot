@@ -53,7 +53,7 @@ def bbc_rss(parameter):
                 s = item_child.text.replace(",", "").replace(".", "").replace(":", "").replace("'s", "").replace("'", "").replace("-", " ").split()
                 s1 = set(s)
                 if (my_words & s1):
-                    #print "%s=%s" % (item_child.tag, item_child.text)
+                    #print "%s - %s" % (item_child.tag, item_child.text)
                     m = hashlib.md5()
                     m.update(item_child.text)
                     h = m.hexdigest()
@@ -66,7 +66,7 @@ def bbc_rss(parameter):
 
     if (report):
         print time.asctime()
-	print report
+        print report
 
     if (parameter == "new"):
         out = report
@@ -75,5 +75,5 @@ def bbc_rss(parameter):
 
     return out
 
-#bbc_rss("new")
+#bbc_rss("all")
 
