@@ -34,7 +34,7 @@ def traffic_report():
         dat.close()
         traf_stat = yaml.load(open(traff))
 
-    last_recive = traf_stat[interface[0]]["rx"]
+    last_receive = traf_stat[interface[0]]["rx"]
     last_send   = traf_stat[interface[0]]["tx"]
 
     print "\nStarting... \n--- ", time.strftime("%A, %d. %B %Y %H:%M")
@@ -42,13 +42,14 @@ def traffic_report():
     output = subprocess.Popen(["ifconfig", interface[0]], stdout=subprocess.PIPE).communicate()[0]
     uptime = subprocess.Popen(["uptime", "-p"],           stdout=subprocess.PIPE).communicate()[0]
 
-    recieve = round( int( rx.findall(output)[0] )/1000./1000. , 2) # Mbytes
-    send    = round( int( tx.findall(output)[0] )/1000./1000. , 2)
+    receive = int( rx.findall(output)[0] ) / 1000. / 1000. # Mbytes
+    send    = int( tx.findall(output)[0] ) / 1000. / 1000.
+    rx_diff = round(receive - last_receive, 2)
+    tx_diff = round(send - last_send, 2)
+    out = "Send: %s Mb \nRecieve: %s Mb \nuptime: %s" % (rx_diff, tx_diff, uptime)
 
-    out = "Send: %s Mb\nRecieve: %s Mb\nuptime: %s" % (recieve - last_recive, send - last_send, uptime)
-
-    stat = template % (interface[0], recieve, send, tm)
-    #print report
+    stat = template % (interface[0], receive, send, tm)
+    print stat
     dat = open(traff, "w")
     dat.writelines(stat)
     dat.close()

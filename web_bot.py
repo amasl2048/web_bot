@@ -32,7 +32,7 @@ elif (key == "bbc"):
     out = bbc("new")
 elif (key == "rate"):
     out = rate("changes")
-elif: (key == "traff"):
+elif (key == "traff"):
     out = traffic()
 else:
     out = ""
