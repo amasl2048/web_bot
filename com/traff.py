@@ -46,7 +46,7 @@ def traffic_report():
     send    = int( tx.findall(output)[0] ) / 1000. / 1000.
     rx_diff = round(receive - last_receive, 2)
     tx_diff = round(send - last_send, 2)
-    out = "Send: %s Mb \nRecieve: %s Mb \nuptime: %s" % (rx_diff, tx_diff, uptime)
+    out = "Send: %s Mb \nReceive: %s Mb \nuptime: %s" % (rx_diff, tx_diff, uptime)
 
     stat = template % (interface[0], receive, send, tm)
     print stat
