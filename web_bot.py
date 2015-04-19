@@ -4,6 +4,7 @@ from com.yahoo_weather import weather_report as weather
 from com.rbc_currency import rbc_get as rbc
 from com.bbc_news import bbc_rss as bbc
 from com.micex import ex_rate as rate
+from com.traff import traffic_report as traffic
 import jabber_ru
 
 import sys
@@ -31,6 +32,8 @@ elif (key == "bbc"):
     out = bbc("new")
 elif (key == "rate"):
     out = rate("changes")
+elif: (key == "traff"):
+    out = traffic()
 else:
     out = ""
 
