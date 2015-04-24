@@ -39,8 +39,8 @@ def traffic_report():
 
     print "\nStarting... \n--- ", time.strftime("%A, %d. %B %Y %H:%M")
 
-    output = subprocess.Popen(["ifconfig", interface[0]], stdout=subprocess.PIPE).communicate()[0]
-    uptime = subprocess.Popen(["uptime", "-p"],           stdout=subprocess.PIPE).communicate()[0]
+    output = subprocess.Popen(["/sbin/ifconfig", interface[0]], shell=True, stdout=subprocess.PIPE).communicate()[0]
+    uptime = subprocess.Popen(["/usr/bin/uptime", "-p"],           shell=True, stdout=subprocess.PIPE).communicate()[0]
 
     receive = int( rx.findall(output)[0] ) / 1000. / 1000. # Mbytes
     send    = int( tx.findall(output)[0] ) / 1000. / 1000.
