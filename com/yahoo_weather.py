@@ -60,15 +60,20 @@ def weather_report(parameter):
     report = ''
 
     if (last_file):
-        if ( abs(temp_h_diff) > 7): report += "Temp. high diff: " + str(temp_h_diff) + " C\n"
-        if ( abs(temp_l_diff) > 7): report += "Temp. low diff: " + str(temp_l_diff) + " C\n"
+        if ( abs(temp_h_diff) > 7): report += "Temp. high diff: " + str(temp_h_diff) +\
+					"(" + str(prev["temp_h"])  + " -> " +\
+					str(temp_h) +  ")" + " C\n"
+        if ( abs(temp_l_diff) > 7): report += "Temp. low diff: " + str(temp_l_diff) +\
+ 					"(" + str(prev["temp_l"])  + " -> " +\
+					str(temp_l) +  ")" + " C\n"
 	if ( (temp_l > 0) and (prev["temp_l"] < 0) ): report += "T low up zero:" + str(temp_l) + " C\n"
 	if ( (temp_h > 0) and (prev["temp_h"] < 0) ): report += "T high up zero:" + str(temp_h) + " C\n"
 	if ( (temp_l < 0) and (prev["temp_l"] > 0) ): report += "T low down zero:" + str(temp_l) + " C\n"
 	if ( (temp_h < 0) and (prev["temp_h"] > 0) ): report += "T high down zero:" + str(temp_h) + " C\n"
 
     if ( (temp_l < 0) and (temp_h > 0) ): report += "Temp. pass zero: " + str(temp_l) + ".." + str(temp_h) + " C\n"
-    if ( diff >= 15 ): report += "Temp. diff: " + str(diff) + " C\n"
+    if ( diff >= 15 ): report += "Temp. diff: " + str(diff) + " C " +\
+				"(" + str(temp_l) + " .. "+ str(temp_h)  + ")" + "\n"
 
     conditions = ("Rain", "storm", "Shower")
     for cond in conditions:
@@ -79,7 +84,9 @@ def weather_report(parameter):
     if ( (pressure <= 735)  or (pressure >= 770) ): report += "Pressure: " + str(pressure) + " mmHg\n"
 
     if (last_file):
-        if ( abs(pressure_diff) > 15 ): report += "Pressure diff: " + str(pressure_diff) + " mmHg\n"
+        if ( abs(pressure_diff) > 15 ): report += "Pressure diff: " + str(pressure_diff) + " mmHg " +\
+						"(" + str(prev["pressure"]) + " -> " + str(pressure) + ")"  +\
+						"\n"
 
     if (chill <= -10): report += "Chill: " + str(chill) + "\n"
 
