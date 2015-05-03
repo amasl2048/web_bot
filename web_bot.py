@@ -33,7 +33,7 @@ elif (key == "bbc"):
 elif (key == "rate"):
     out = rate("changes")
 elif (key == "traff"):
-    out = traffic()
+    out = traffic("update")
 else:
     out = ""
 

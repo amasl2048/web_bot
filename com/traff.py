@@ -10,7 +10,12 @@ Traffic stats in Mbytes
 per week/month
 '''
 
-def traffic_report():
+def traffic_report(param):
+    '''
+    param:
+      today  - only traff data from last update
+      update - rewrite traff yml file
+    '''
     interface = ["eth0"]
 
     rx = re.compile(r"RX bytes:([0-9]+) \(", re.S)
@@ -50,9 +55,11 @@ def traffic_report():
 
     stat = template % (interface[0], receive, send, tm)
     print stat
-    dat = open(traff, "w")
-    dat.writelines(stat)
-    dat.close()
+    if (param == "update"):
+      dat = open(traff, "w")
+      dat.writelines(stat)
+      dat.close()
+ 
     return out
 
 #print traffic_report()
