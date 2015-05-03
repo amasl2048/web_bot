@@ -54,7 +54,7 @@ class SystemInfoJabberBot(JabberBot):
         if not self.check_cont(mess): return "Error"
         return str(check_totp(mess))
 
-        @botcmd
+    @botcmd
     def traff( self, mess, args):
         """Traffic data from last update"""
         if not self.check_cont(mess): return "Error"
