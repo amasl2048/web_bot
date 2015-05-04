@@ -9,7 +9,7 @@ from com.yahoo_weather import weather_report as weather
 from com.rbc_currency import rbc_get as rbc
 from com.bbc_news import bbc_rss as bbc
 from com.micex import ex_rate as rate
-from com.totp_check import totp_accept as totp_ckeck
+from com.totp_check import totp_accept as totpcheck
 from com.traff import traffic_report as traffic
 
 class SystemInfoJabberBot(JabberBot):
@@ -52,7 +52,8 @@ class SystemInfoJabberBot(JabberBot):
     def totp( self, mess, args):
         """Check TOTP auth"""
         if not self.check_cont(mess): return "Error"
-        return str(check_totp(mess))
+        if totpcheck(args): return "ok"
+        return "error"
 
     @botcmd
     def traff( self, mess, args):
