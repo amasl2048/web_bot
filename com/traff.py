@@ -22,17 +22,25 @@ def traffic_report(param):
     tx = re.compile(r"TX bytes:([0-9]+) \(", re.S)
 
     template = '''%s:
-        rx: %s
-        tx: %s
-        tm: %s
+    rx: %s
+    tx: %s
+    week_in: %s
+    week_out: %s
+    month_in: %s
+    month_out: %s
+    tm: %s
     '''
 
     traff = "traf_report.yml"
     tm = time.strftime("%d.%m.%Y %H:%M:%S", time.localtime())
+    week = time.strftime("%w")
+    day  = time.strftime("%d")
     try:
         traf_stat = yaml.load(open(traff))
     except:
-        stat = template % (interface[0], 0, 0, tm)
+        stat = template % (interface[0], 0, 0,
+                           0, 0, 0, 0,
+                           tm)
         #print report
         dat = open(traff, "w")
         dat.writelines(stat)
@@ -45,15 +53,46 @@ def traffic_report(param):
     print "\nStarting... \n--- ", time.strftime("%A, %d. %B %Y %H:%M")
 
     output = subprocess.Popen(["/sbin/ifconfig", interface[0]], shell=True, stdout=subprocess.PIPE).communicate()[0]
-    uptime = subprocess.Popen(["/usr/bin/uptime", "-p"],           shell=True, stdout=subprocess.PIPE).communicate()[0]
+    uptime = subprocess.Popen(["/usr/bin/uptime", "-p"],        shell=True, stdout=subprocess.PIPE).communicate()[0]
 
-    receive = int( rx.findall(output)[0] ) / 1000. / 1000. # Mbytes
-    send    = int( tx.findall(output)[0] ) / 1000. / 1000.
-    rx_diff = round(receive - last_receive, 2)
-    tx_diff = round(send - last_send, 2)
-    out = "Send: %s Mb \nReceive: %s Mb \nuptime: %s" % (rx_diff, tx_diff, uptime)
+    receive = int( rx.findall(output)[0] ) # bytes from ifconfig
+    send    = int( tx.findall(output)[0] )
+    rx_diff = receive - last_receive
+    tx_diff = send    - last_send
 
-    stat = template % (interface[0], receive, send, tm)
+    # counters weekly / monthly
+    rx_week  = traf_stat[interface[0]]["week_in"]   + rx_diff 
+    tx_week  = traf_stat[interface[0]]["week_out"]  + tx_diff
+    rx_month = traf_stat[interface[0]]["month_in"]  + rx_diff
+    tx_month = traf_stat[interface[0]]["month_out"] + tx_diff 
+
+    def mb(b):
+        return round( (b /1000. / 1000.) , 2 )
+    
+    out = '''%s     receive \t send
+Daily:   %s Mb \t %s Mb
+Weekly:  %s Mb \t %s Mb
+Monthly: %s Mb \t %s Mb
+Totaly:  %s Mb \t %s Mb
+uptime: %s''' % (interface[0],
+		mb(rx_diff),  mb(tx_diff),
+                mb(rx_week),  mb(tx_week),
+                mb(rx_month), mb(tx_month),
+                mb(receive),  mb(send),
+                uptime)
+
+    # reset counters
+    if week == "0":
+        rx_week = 0
+        tx_week = 0
+    if day == "1":
+        rx_month = 0
+        tx_month = 0
+    
+    stat = template % (interface[0], receive, send,
+                       rx_week,  tx_week,
+                       rx_month, tx_month,
+                       tm)
     print stat
     if (param == "update"):
       dat = open(traff, "w")
@@ -62,4 +101,4 @@ def traffic_report(param):
  
     return out
 
-#print traffic_report()
+#print traffic_report("update")
