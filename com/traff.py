@@ -67,20 +67,20 @@ def traffic_report(param):
     tx_month = traf_stat[interface[0]]["month_out"] + tx_diff 
 
     def mb(b):
-        return round( (b /1000. / 1000.) , 2 )
+        return round( (b /1000. / 1000.) , 1 )
     
-    out = '''%s     receive \t send
-Daily:   %s Mb \t %s Mb
-Weekly:  %s Mb \t %s Mb
-Monthly: %s Mb \t %s Mb
-Totaly:  %s Mb \t %s Mb
+    out = '''%s     receive/send Mb
+Daily:   %s/%s
+Weekly:  %s/%s
+Monthly: %s/%s
+Totaly:  %s/%s
 uptime: %s''' % (interface[0],
 		mb(rx_diff),  mb(tx_diff),
                 mb(rx_week),  mb(tx_week),
                 mb(rx_month), mb(tx_month),
                 mb(receive),  mb(send),
                 uptime)
-
+    print out
     # reset counters
     if week == "0":
         rx_week = 0
@@ -93,7 +93,7 @@ uptime: %s''' % (interface[0],
                        rx_week,  tx_week,
                        rx_month, tx_month,
                        tm)
-    print stat
+
     if (param == "update"):
       dat = open(traff, "w")
       dat.writelines(stat)
