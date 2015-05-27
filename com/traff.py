@@ -57,8 +57,16 @@ def traffic_report(param):
 
     receive = int( rx.findall(output)[0] ) # bytes from ifconfig
     send    = int( tx.findall(output)[0] )
-    rx_diff = receive - last_receive
-    tx_diff = send    - last_send
+
+    if (receive > last_receive):
+        rx_diff = receive - last_receive
+    else:
+        rx_diff = receive
+
+    if (send > last_send):   
+        tx_diff = send - last_send
+    else:
+        tx_diff = send
 
     # counters weekly / monthly
     rx_week  = traf_stat[interface[0]]["week_in"]   + rx_diff 
