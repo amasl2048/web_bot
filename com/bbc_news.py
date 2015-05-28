@@ -55,7 +55,7 @@ def bbc_rss(parameter):
                 if (my_words & s1):
                     #print "%s - %s" % (item_child.tag, item_child.text)
                     m = hashlib.md5()
-                    m.update(item_child.text)
+                    m.update(item_child.text.encode("utf-8"))
                     h = m.hexdigest()
                     if (not (h in hashes) ):
                         report += item_child.text + "\n\n"
