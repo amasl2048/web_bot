@@ -73,7 +73,7 @@ def bbc_rss(parameter):
     else:
         out = full_report
 
-    return out
+    return out.encode("utf-8")
 
 #bbc_rss("all")
 

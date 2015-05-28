@@ -36,7 +36,8 @@ elif (key == "traff"):
     out = traffic("update")
 else:
     out = ""
+    print "No data"
 
 if out:
     jabber_ru.send_xmpp(out)
-    #print out
+    print out
