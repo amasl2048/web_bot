@@ -37,6 +37,12 @@ class SystemInfoJabberBot(JabberBot):
         if ( (len(arg) < 256) and (r.search(arg.strip())) ):
             return True
         return False
+
+    def check_cmd( self, arg):
+        r = re.compile(r"^[a-z0-9.:\s/]+$")
+        if ( (len(arg) < 256) and (r.search(arg.strip())) ):
+            return True
+        return False
  
     @botcmd
     def whoami(self, mess, args):
@@ -136,6 +142,27 @@ class SystemInfoJabberBot(JabberBot):
                              stderr=subprocess.PIPE)
         out, err = p.communicate()
         return str(out)
+
+    @botcmd
+    def share( self, mess, args):
+        """share /static_url days"""
+        if not self.check_cont(mess): return "Error"
+        if len(args) == 0:
+            s = ""
+        elif (self.check_cmd(args)):
+            s = str(args).strip()
+        else:
+            return "Error1"
+        cmd = []
+        cmd.append("./static_url.py")
+        cmd += s.split()
+        cmd.append("&")
+        #print cmd
+        p = subprocess.Popen(cmd,
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE)
+        #out, err = p.communicate()
+        return "Done."
 
     @botcmd
     def rot13( self, mess, args):
