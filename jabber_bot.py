@@ -11,6 +11,7 @@ from com.bbc_news import bbc_rss as bbc
 from com.micex import ex_rate as rate
 from com.totp_check import totp_accept as totpcheck
 from com.traff import traffic_report as traffic
+from com.velo import velo_cmd as velo
 
 class SystemInfoJabberBot(JabberBot):
 
@@ -166,6 +167,19 @@ class SystemInfoJabberBot(JabberBot):
         """Displays CBRF currency ex-rate from RBC"""
         if not self.check_cont(mess): return "Error"
         return str(rbc("m"))
+
+    @botcmd
+    def velo( self, mess, args):
+        """Displays velo statistics"""
+        if not self.check_cont(mess): return "Error"
+        if len(args) == 0:
+            return str(velo("stat"))
+        if args:
+            s = str(args).strip()
+            #print s
+        else:
+            return "Error"
+        return str(velo(s))
 
 try:
     Conf = yaml.load(open("/etc/xmpp_ru.yml"))
