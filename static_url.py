@@ -21,11 +21,11 @@ host = url_conf["host"].strip()
 local_path = url_conf["local"].strip()
 days = url_conf["days"]
 
-if len(sys.argv) == 3:
-    local_path += sys.argv[1]
-
-if len(sys.argv) == 4:
-    local_path += sys.argv[1]
+if len(sys.argv) == 4: # becaurse "&" - the 4th argv
+    if not sys.argv[1].isalnum():
+        print "Error", sys.argv[1]
+        sys.exit(0)
+    local_path = os.path.join(local_path, sys.argv[1])
     days = int(sys.argv[2])
 
 port = choice(range(9000,9999))
@@ -36,7 +36,7 @@ if out:
     with open("url.link", "w") as f:
         f.write(out)
     img = qrcode.make(out)
-    img.save(local_path + "/url.png", "png")
+    img.save(os.path.join(local_path, "url.png"), "png")
 
 root = Resource()
 root.putChild(url, File(local_path))

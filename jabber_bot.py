@@ -39,7 +39,7 @@ class SystemInfoJabberBot(JabberBot):
         return False
 
     def check_cmd( self, arg):
-        r = re.compile(r"^[a-z0-9.:\s/]+$")
+        r = re.compile(r"^[a-z0-9.:\s]+$")
         if ( (len(arg) < 256) and (r.search(arg.strip())) ):
             return True
         return False
@@ -145,14 +145,14 @@ class SystemInfoJabberBot(JabberBot):
 
     @botcmd
     def share( self, mess, args):
-        """share /static_url days"""
+        """share <dir> <days>"""
         if not self.check_cont(mess): return "Error"
         if len(args) == 0:
             s = ""
-        elif (self.check_cmd(args)):
+        elif self.check_cmd(args):
             s = str(args).strip()
         else:
-            return "Error1"
+            return "Error"
         cmd = []
         cmd.append("./static_url.py")
         cmd += s.split()
@@ -201,7 +201,7 @@ class SystemInfoJabberBot(JabberBot):
         if not self.check_cont(mess): return "Error"
         if len(args) == 0:
             return str(velo("stat"))
-        if args:
+        elif self.check_cmd(args):
             s = str(args).strip()
             #print s
         else:

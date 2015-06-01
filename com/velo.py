@@ -1,6 +1,7 @@
 from pandas import read_csv
 import datetime
 import re
+import shutil
 
 def velo_stat(csvfile):
     df = read_csv(csvfile, sep='\t', header=0, index_col=0, parse_dates=[1,2])
@@ -31,6 +32,7 @@ def velo_add(csvfile, t, km):
     today = datetime.date.today()
     s = df["date"].size
 
+    shutil.copy2(csvfile, csvfile + "~")
     row = "%s\t%s\t%s\t%s\n" % (s+1, today, t, km)
     with open(csvfile, "a") as f:
         f.write(row)

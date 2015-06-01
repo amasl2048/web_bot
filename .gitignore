@@ -4,3 +4,6 @@
 *.yml
 *.log
 *.png
+*.csv
+*.link
+*#
