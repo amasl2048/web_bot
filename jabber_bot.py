@@ -12,6 +12,7 @@ from com.micex import ex_rate as rate
 from com.totp_check import totp_accept as totpcheck
 from com.traff import traffic_report as traffic
 from com.velo import velo_cmd as velo
+from com.erlang_b import erlang
 
 class SystemInfoJabberBot(JabberBot):
 
@@ -207,6 +208,19 @@ class SystemInfoJabberBot(JabberBot):
         else:
             return "Error"
         return str(velo(s))
+
+    @botcmd
+    def erlang( self, mess, args):
+        """Erlang B calculator"""
+        if not self.check_cont(mess): return "Error"
+        if len(args) == 0:
+            return str(erlang(""))
+        elif self.check_cmd(args):
+            s = str(args).strip()
+            #print s
+        else:
+            return "Error"
+        return str(erlang(s))
 
 try:
     Conf = yaml.load(open("/etc/xmpp_ru.yml"))
