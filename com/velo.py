@@ -3,19 +3,28 @@ import datetime
 import re
 import shutil
 
+def str2time(Series):
+    patt = re.compile("(\d+):(\d+)")
+    h,m = patt.search(Series).groups()
+    return datetime.timedelta(hours=int(h), minutes=int(m))
+
 def velo_stat(csvfile):
-    df = read_csv(csvfile, sep='\t', header=0, index_col=0, parse_dates=[1,2])
+    df = read_csv(csvfile, sep='\t', header=0, index_col=0, parse_dates=[1])
     today = datetime.datetime.today()
-    s = df["date"].size
+    st = df["date"].size
+    df["timedelta"] = df["time"].map(str2time)
+    ttime = round(df["timedelta"].sum()/1000/1000/1000/60/60., 1)
 
     out = """Totaly:\t%s km %s times
+Time:\t%s hours
 Avg:\t%s km per day
 Last:\t%s days
 Velo:\teach %s days
-"""  % (df["km"].sum(), s,
+"""  % (df["km"].sum(), st,
+    ttime,
     round(df["km"].mean(), 1),
-    (today - df.loc[s, "date"]).days,
-    (today - df.loc[1, "date"]).days / s 
+    (today - df.loc[st, "date"]).days,
+    (today - df.loc[1, "date"]).days / st 
     )
 
     return out
