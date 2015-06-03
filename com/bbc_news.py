@@ -66,7 +66,7 @@ def bbc_rss(parameter):
 
     if (report):
         print time.asctime()
-        print report
+        print report.decode("windows-1252").encode("utf-8") # '\xa3' -> £
 
     if (parameter == "new"):
         out = report
