@@ -14,7 +14,7 @@ import sys
 log_file = open("static_url.log", "a")
 log.startLogging(log_file)
 
-url = base64.encodestring(str(os.urandom(6))).strip()
+url = base64.b32encode(str(os.urandom(10))).strip()
 
 url_conf = yaml.load(open("static_url.yml"))
 host = url_conf["host"].strip()
