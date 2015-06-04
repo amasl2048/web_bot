@@ -77,11 +77,11 @@ def traffic_report(param):
     def mb(b):
         return round( (b /1000. / 1000.) , 1 )
     
-    out = '''%s     receive/send Mb
-Daily:   %s/%s
-Weekly:  %s/%s
-Monthly: %s/%s
-Totaly:  %s/%s
+    out = '''%s\t receive/send Mb
+Daily:\t %s/%s
+Weekly:\t %s/%s
+Monthly:\t %s/%s
+Eth:\t %s/%s
 uptime: %s''' % (interface[0],
 		mb(rx_diff),  mb(tx_diff),
                 mb(rx_week),  mb(tx_week),
