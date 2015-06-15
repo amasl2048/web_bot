@@ -13,6 +13,7 @@ from com.totp_check import totp_accept as totpcheck
 from com.traff import traffic_report as traffic
 from com.velo import velo_cmd as velo
 from com.erlang_b import erlang
+from com.link import link_cmd
 
 class SystemInfoJabberBot(JabberBot):
 
@@ -41,6 +42,12 @@ class SystemInfoJabberBot(JabberBot):
 
     def check_cmd( self, arg):
         r = re.compile(r"^[a-z0-9.:\s]+$")
+        if ( (len(arg) < 256) and (r.search(arg.strip())) ):
+            return True
+        return False
+
+    def check_link( self, arg):
+        r = re.compile(u"^[0-9a-zA-Zа-яА-Я.:/\s]+$" )
         if ( (len(arg) < 256) and (r.search(arg.strip())) ):
             return True
         return False
@@ -208,6 +215,19 @@ class SystemInfoJabberBot(JabberBot):
         else:
             return "Error"
         return str(velo(s))
+
+    @botcmd
+    def link( self, mess, args):
+        """Manage links"""
+        if not self.check_cont(mess): return "Error"
+        if len(args) == 0:
+            return str(link_cmd("stat"))
+        elif self.check_link(args):
+            s = str(args).strip()
+            #print s
+        else:
+            return "Error lnk"
+        return link_cmd(s)
 
     @botcmd
     def erlang( self, mess, args):
