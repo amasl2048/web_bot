@@ -8,7 +8,10 @@ import re
 
 def link_stat(ymlfile):
     links = yaml.load(open(ymlfile))
-    return "%s records" % len(links.keys())
+    tags = set()
+    for key, val in links.iteritems():
+        tags.add(val["tag"])
+    return "%s records with %s tags" % (len(links.keys()), tags)
 
 def link_del(ymlfile, link_id):
     links = yaml.load(open(ymlfile))
@@ -20,7 +23,7 @@ def link_tag(ymlfile, tag):
     report = ""
     for key, val in links.iteritems():
         if val["tag"] == tag:
-            report += val["link"] + "\t" + val["title"] + "\n"
+            report += val["link"] + " - " + val["title"] + "\n"
             count += 1
     return "%sFound: %s records with tag %s" % (report, count, tag)
 
@@ -30,7 +33,7 @@ def link_url(ymlfile, url):
     report = ""
     for key, val in links.iteritems():
         if url in val["link"]:
-            report += val["link"] + "\t" + val["title"] + "\n"
+            report += val["link"] + " - " + val["title"] + "\n"
             count += 1
     return "%sFound: %s records with url %s" % (report, count, url)
 
@@ -40,7 +43,7 @@ def link_title(ymlfile, title):
     report = ""
     for key, val in links.iteritems():
         if title in val["title"]:
-            report += val["link"] + "\t" + val["title"] + "\n"
+            report += val["link"] + " - " + val["title"] + "\n"
             count += 1
     return "%sFound: %s records with title %s" % (report, count, title)
 
@@ -54,14 +57,13 @@ def link_search(ymlfile, keyword):
 def link_add(ymlfile, lnk, tag):
     if "http" not in lnk:
         lnk = "http://" + lnk
-        print lnk
+        #print lnk
     try:
         data = urllib2.urlopen(lnk).read()
     except:
         return "Error url"
     pattern = re.compile("<title>(.*)</title>")
     title = pattern.findall(data)[0]
-    title = title.replace(":", "") # othewise will be wrong yaml file
     utitle = unicode(title,"utf-8")
     
     today = datetime.date.today()
@@ -70,18 +72,17 @@ def link_add(ymlfile, lnk, tag):
     shutil.copy2(ymlfile, ymlfile + "~")
 
     record = '''%s:
-    link: %s
-    title: %s
-    tag: %s
-    date: %s
+    link: "%s"
+    title: "%s"
+    tag: "%s"
+    date: "%s"
 ''' % (link_id, lnk, utitle, tag, today)
-    print record
+    #print record
 
     with open(ymlfile, "a") as f:
         f.write(record.encode("utf-8"))
 
-    #print title
-    return "%s \t %s \n %s" % (lnk, utitle.encode("utf-8"), link_stat(ymlfile))
+    return u"%s \t %s \n %s" % (lnk, utitle, link_stat(ymlfile))
 
 
 def link_cmd(cmd):
