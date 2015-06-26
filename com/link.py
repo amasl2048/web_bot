@@ -60,25 +60,33 @@ def link_add(ymlfile, lnk, tag):
         #print lnk
     try:
         data = urllib2.urlopen(lnk).read()
+        #print data
     except:
         return "Error url"
+
+    patt_charset = re.compile("charset=(.*)\"")
+    charset = patt_charset.findall(data)[0]
+
     pattern = re.compile("<title>(.*)</title>")
     title = pattern.findall(data)[0]
-    utitle = unicode(title,"utf-8")
+    utitle = unicode(title, charset)
+    print charset, title
+    print "utitle: ", utitle
     
     today = datetime.date.today()
     link_id = base64.b32encode(str(os.urandom(5))).strip()
 
     shutil.copy2(ymlfile, ymlfile + "~")
 
-    record = '''%s:
+    record = u'''%s:
     link: "%s"
     title: "%s"
     tag: "%s"
     date: "%s"
 ''' % (link_id, lnk, utitle, tag, today)
-    #print record
-
+    
+    print record
+    
     with open(ymlfile, "a") as f:
         f.write(record.encode("utf-8"))
 
@@ -133,4 +141,4 @@ def link_cmd(cmd):
     else:
         return "None"
 
-#print link_cmd("stat")
+print link_cmd("add rbc.ru news")
