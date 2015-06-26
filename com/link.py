@@ -5,6 +5,8 @@ import yaml
 import os, base64
 import urllib2
 import re
+from StringIO import StringIO
+import gzip
 
 def link_stat(ymlfile):
     links = yaml.load(open(ymlfile))
@@ -67,7 +69,12 @@ def link_add(ymlfile, link, tag):
         except:
             return "Error url"
 
-    data = res.read()
+    if res.info().get('Content-Encoding') == 'gzip':
+        buf = StringIO( res.read())
+        ff = gzip.GzipFile(fileobj=buf)
+        data = ff.read()
+    else:   
+        data = res.read()
     charset = res.info().getparam("charset")
 
     pattern = re.compile("<title>(.*?)</title>")
@@ -149,4 +156,4 @@ def link_cmd(cmd):
     else:
         return "None"
 
-print link_cmd("stat")
+#print link_cmd("stat")
