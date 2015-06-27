@@ -2,7 +2,7 @@
 import datetime
 import shutil
 import yaml
-import os, base64
+import hashlib
 import urllib2
 import re
 from StringIO import StringIO
@@ -18,13 +18,20 @@ def link_stat(ymlfile):
 def link_del(ymlfile, link_id):
     links = yaml.load(open(ymlfile))
     return links.pop(link_id, "None")
+
+def link_uniq(ymlfile, link_id):
+    links = yaml.load(open(ymlfile))
+    hashes = links.keys()
+    if link_id in hashes:
+        return False
+    return True
     
 def link_tag(ymlfile, tag):
     links = yaml.load(open(ymlfile))
     count = 0
     report = ""
     for key, val in links.iteritems():
-        if val["tag"] == tag:
+        if val["tag"] == tag.lower():
             report += val["link"] + " - " + val["title"] + "\n"
             count += 1
     return u"%s--\nFound: %s records with tag %s" % (report, count, tag)
@@ -34,17 +41,22 @@ def link_url(ymlfile, url):
     count = 0
     report = ""
     for key, val in links.iteritems():
-        if url in val["link"]:
+        if url.lower() in val["link"]:
             report += val["link"] + " - " + val["title"] + "\n"
             count += 1
     return u"%s--\nFound: %s records with url %s" % (report, count, url)
 
 def link_title(ymlfile, title):
+    """
+    Search pattern in title record
+    """
+
     links = yaml.load(open(ymlfile))
     count = 0
     report = ""
+    ptitle = re.compile(title, re.I | re.L | re.U)
     for key, val in links.iteritems():
-        if title in val["title"]:
+        if ptitle.search(val["title"]):
             report += val["link"] + " - " + val["title"] + "\n"
             count += 1
     return u"%s--\nFound: %s records with title %s" % (report, count, title)
@@ -60,10 +72,16 @@ def link_add(ymlfile, link, tag):
 
     if "http" not in link:
         lnk = "https://" + link
-    try:
-        res = urllib2.urlopen(lnk, None, 3)
-    except:
-        lnk = "http://" + link
+        try:
+            res = urllib2.urlopen(lnk, None, 3)
+        except:
+            lnk = "http://" + link
+            try:
+                res = urllib2.urlopen(lnk, None, 3)
+            except:
+                return "Error url"
+    else:
+        lnk = link
         try:
             res = urllib2.urlopen(lnk, None, 3)
         except:
@@ -88,7 +106,12 @@ def link_add(ymlfile, link, tag):
 #    print "utitle: ", utitle
     
     today = datetime.date.today()
-    link_id = base64.b32encode(str(os.urandom(5))).strip()
+    m = hashlib.md5()
+    m.update(lnk)
+    link_id = (m.hexdigest())[-8:]
+
+    if not link_uniq(ymlfile, link_id):
+        return "Error: duplicate link..."
 
     shutil.copy2(ymlfile, ymlfile + "~")
 
@@ -97,21 +120,21 @@ def link_add(ymlfile, link, tag):
     title: "%s"
     tag: "%s"
     date: "%s"
-''' % (link_id, lnk, utitle, tag, today)
+''' % (link_id, lnk.lower(), utitle, tag.lower(), today)
     
 #    print record
     
     with open(ymlfile, "a") as f:
         f.write(record.encode("utf-8")) # we will use exctly utf-8
 
-    return u"%s \t %s \n %s" % (lnk, utitle, link_stat(ymlfile))
+    return u"%s \t %s \n %s" % (lnk.lower(), utitle, link_stat(ymlfile))
 
 
 def link_cmd(cmd):
     '''
     link <cmd> <options>
       cmd:  
-        "add <link> <tag>" - adding new record
+        "add <url> <tag>" - adding new record
         "del <link_id>"
         "tag <tag>" - find links with tag
         "url <url>" - find links contain url
@@ -120,7 +143,7 @@ def link_cmd(cmd):
         "help" - print help
         "stat" - return statistics       
     '''
-    charset = "utf-8"
+
     ymlfile = "./links.yml"
     if cmd == "":
         cmd = "stat" 
@@ -136,24 +159,24 @@ def link_cmd(cmd):
     elif c[0] == "tag":
         if len(c) != 2:
             return "Error"
-        return link_tag(ymlfile, unicode(c[1], charset))
+        return link_tag(ymlfile, c[1])
     elif c[0] == "url":
         if len(c) != 2:
             return "Error"
-        return link_url(ymlfile, unicode(c[1], charset))
+        return link_url(ymlfile, c[1])
     elif c[0] == "title":
         if len(c) != 2:
             return "Error"
-        return link_title(ymlfile, unicode(c[1], charset))
+        return link_title(ymlfile, c[1])
     elif c[0] == "search":
         if len(c) != 2:
             return "Error"
-        return link_search(ymlfile, unicode(c[1], charset))
+        return link_search(ymlfile, c[1])
     elif c[0] == "add":
         if len(c) != 3:
-            return "Error"
-        return link_add(ymlfile, unicode(c[1], charset), c[2])
+            return "Usage: link add <url> <tag>"
+        return link_add(ymlfile, c[1], c[2])
     else:
         return "None"
 
-#print link_cmd("stat")
+#print link_cmd("")

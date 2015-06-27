@@ -222,12 +222,11 @@ class SystemInfoJabberBot(JabberBot):
         if not self.check_cont(mess): return "Error"
         if len(args) == 0:
             return str(link_cmd("stat"))
-        elif self.check_link(args):
-            s = str(args).strip()
-            #print s
+        elif not self.check_link(args):
+            return "Error link"
         else:
-            return "Error lnk"
-        return link_cmd(s)
+            return link_cmd(args.strip()).encode("utf-8")
+
 
     @botcmd
     def erlang( self, mess, args):
