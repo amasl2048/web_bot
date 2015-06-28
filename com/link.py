@@ -9,11 +9,17 @@ from StringIO import StringIO
 import gzip
 
 def link_stat(ymlfile):
+
     links = yaml.load(open(ymlfile))
     tags = set()
+    tag_list = u""
     for key, val in links.iteritems():
         tags.add(val["tag"])
-    return u"%s records with %s tags" % (len(links.keys()), tags)
+    for item in tags:
+        if isinstance(item, str):
+            item = unicode(item, "utf-8")
+        tag_list = tag_list + " " + item
+    return u"%s records with %s tags" % (len(links.keys()), tag_list)
 
 def link_del(ymlfile, link_id):
     links = yaml.load(open(ymlfile))
@@ -31,7 +37,7 @@ def link_tag(ymlfile, tag):
     count = 0
     report = ""
     for key, val in links.iteritems():
-        if val["tag"] == tag.lower():
+        if val["tag"] == tag:
             report += val["link"] + " - " + val["title"] + "\n"
             count += 1
     return u"%s--\nFound: %s records with tag %s" % (report, count, tag)
@@ -41,7 +47,7 @@ def link_url(ymlfile, url):
     count = 0
     report = ""
     for key, val in links.iteritems():
-        if url.lower() in val["link"]:
+        if url in val["link"]:
             report += val["link"] + " - " + val["title"] + "\n"
             count += 1
     return u"%s--\nFound: %s records with url %s" % (report, count, url)
@@ -49,14 +55,18 @@ def link_url(ymlfile, url):
 def link_title(ymlfile, title):
     """
     Search pattern in title record
+    Ignore case for cyrillic - hack with lower case
     """
-
     links = yaml.load(open(ymlfile))
     count = 0
     report = ""
-    ptitle = re.compile(title, re.I | re.L | re.U)
+    ptitle = re.compile( title.lower(), re.L | re.I) # re.I not work with cyrillic?
     for key, val in links.iteritems():
-        if ptitle.search(val["title"]):
+        if isinstance(val["title"], str):
+            uttl = unicode(val["title"], "utf-8").lower() # hack
+        else:
+            uttl = val["title"].lower()
+        if ptitle.search( uttl  ):
             report += val["link"] + " - " + val["title"] + "\n"
             count += 1
     return u"%s--\nFound: %s records with title %s" % (report, count, title)
@@ -69,21 +79,29 @@ def link_search(ymlfile, keyword):
     return report
 
 def link_add(ymlfile, link, tag):
-
+    """
+    GET page from link
+    Parse charset, title
+    Save data to yml file
+    """
+    elink = link.encode("idna")
     if "http" not in link:
         lnk = "https://" + link
         try:
-            res = urllib2.urlopen(lnk, None, 3)
+            res = urllib2.urlopen("https://" + elink, None, 3)
         except:
-            lnk = "http://" + link
+            lnk = "http://" + elink
             try:
-                res = urllib2.urlopen(lnk, None, 3)
+                res = urllib2.urlopen("http://" + elink, None, 3)
             except:
                 return "Error url"
     else:
         lnk = link
+        sep = r"://"
+        prefix, elink = link.split(sep)
+        elink = elink.encode("idna")
         try:
-            res = urllib2.urlopen(lnk, None, 3)
+            res = urllib2.urlopen(prefix + sep + elink, None, 3)
         except:
             return "Error url"
 
@@ -95,7 +113,7 @@ def link_add(ymlfile, link, tag):
         data = res.read()
     charset = res.info().getparam("charset")
 
-    pattern = re.compile("<title>(.*?)</title>")
+    pattern = re.compile("<title>(.*?)</title>", re.I)
     title1 = pattern.findall(data)
     if title1:
         title = pattern.findall(data)[0]
@@ -107,7 +125,7 @@ def link_add(ymlfile, link, tag):
     
     today = datetime.date.today()
     m = hashlib.md5()
-    m.update(lnk)
+    m.update(lnk.encode("utf-8"))
     link_id = (m.hexdigest())[-8:]
 
     if not link_uniq(ymlfile, link_id):
@@ -120,12 +138,12 @@ def link_add(ymlfile, link, tag):
     title: "%s"
     tag: "%s"
     date: "%s"
-''' % (link_id, lnk.lower(), utitle, tag.lower(), today)
+''' % (link_id, lnk, utitle, tag, today)
     
 #    print record
     
     with open(ymlfile, "a") as f:
-        f.write(record.encode("utf-8")) # we will use exctly utf-8
+        f.write(record.encode("utf-8")) # we will use exactly utf-8
 
     return u"%s \t %s \n %s" % (lnk.lower(), utitle, link_stat(ymlfile))
 
@@ -159,11 +177,11 @@ def link_cmd(cmd):
     elif c[0] == "tag":
         if len(c) != 2:
             return "Error"
-        return link_tag(ymlfile, c[1])
+        return link_tag(ymlfile, c[1].lower())
     elif c[0] == "url":
         if len(c) != 2:
             return "Error"
-        return link_url(ymlfile, c[1])
+        return link_url(ymlfile, c[1].lower())
     elif c[0] == "title":
         if len(c) != 2:
             return "Error"
@@ -175,7 +193,7 @@ def link_cmd(cmd):
     elif c[0] == "add":
         if len(c) != 3:
             return "Usage: link add <url> <tag>"
-        return link_add(ymlfile, c[1], c[2])
+        return link_add(ymlfile, c[1], c[2].lower())
     else:
         return "None"
 
