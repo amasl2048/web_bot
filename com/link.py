@@ -9,7 +9,9 @@ from StringIO import StringIO
 import gzip
 
 def link_stat(ymlfile):
-
+    '''
+    Return total number of records and tags list
+    '''
     links = yaml.load(open(ymlfile))
     tags = set()
     tag_list = u""
@@ -22,12 +24,22 @@ def link_stat(ymlfile):
     return u"%s records with %s tags" % (len(links.keys()), tag_list)
 
 def link_del(ymlfile, link_id):
+    '''
+    del not work yet - for future implementation
+    '''
     links = yaml.load(open(ymlfile))
     return links.pop(link_id, "None")
 
 def link_uniq(ymlfile, link_id):
+    '''
+    Check if link hash is unique
+    '''
+
     links = yaml.load(open(ymlfile))
-    hashes = links.keys()
+    try:
+        hashes = links.keys()
+    except AttributeError:
+        return True
     if link_id in hashes:
         return False
     return True
@@ -84,22 +96,37 @@ def link_add(ymlfile, link, tag):
     Parse charset, title
     Save data to yml file
     """
-    elink = link.encode("idna")
+
+    # separate address from "http" to check unique link_id hash
+    sep = r"://"
     if "http" not in link:
+        lnk = link
+    else:
+        prefix, lnk = link.split(sep)
+    
+    today = datetime.date.today()
+    m = hashlib.md5()
+    m.update(lnk.encode("utf-8")) # lnk w/o "http"
+    link_id = (m.hexdigest())[-8:] # get last 8 hex digits
+
+    if not link_uniq(ymlfile, link_id):
+        return "Sorry: duplicate link..."
+
+    # try https before, then try http
+    if "http" not in link:
+        elink = link.encode("idna")
         lnk = "https://" + link
         try:
             res = urllib2.urlopen("https://" + elink, None, 3)
         except:
-            lnk = "http://" + elink
+            lnk = "http://" + link
             try:
                 res = urllib2.urlopen("http://" + elink, None, 3)
             except:
                 return "Error url"
     else:
-        lnk = link
-        sep = r"://"
-        prefix, elink = link.split(sep)
-        elink = elink.encode("idna")
+        elink = lnk.encode("idna")
+        lnk = link # return http prefix to save
         try:
             res = urllib2.urlopen(prefix + sep + elink, None, 3)
         except:
@@ -123,14 +150,6 @@ def link_add(ymlfile, link, tag):
 
 #    print "utitle: ", utitle
     
-    today = datetime.date.today()
-    m = hashlib.md5()
-    m.update(lnk.encode("utf-8"))
-    link_id = (m.hexdigest())[-8:]
-
-    if not link_uniq(ymlfile, link_id):
-        return "Error: duplicate link..."
-
     shutil.copy2(ymlfile, ymlfile + "~")
 
     record = u'''%s:
