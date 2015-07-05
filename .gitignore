@@ -8,4 +8,6 @@
 *.png
 *.csv
 *.link
+*.iv
+*.pem
 *#

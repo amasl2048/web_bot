@@ -14,6 +14,7 @@ from com.traff import traffic_report as traffic
 from com.velo import velo_cmd as velo
 from com.erlang_b import erlang
 from com.link import link_cmd
+from com.memo_cli import memo_cmd
 
 class SystemInfoJabberBot(JabberBot):
 
@@ -227,6 +228,14 @@ class SystemInfoJabberBot(JabberBot):
         else:
             return link_cmd(args.strip()).encode("utf-8")
 
+    @botcmd
+    def memo( self, mess, args):
+        """Save notes"""
+        if not self.check_cont(mess): return "Error"
+        if len(args) == 0:
+            return memo_cmd("stat").encode("utf-8")
+        else:
+            return memo_cmd(args.strip()).encode("utf-8")
 
     @botcmd
     def erlang( self, mess, args):
