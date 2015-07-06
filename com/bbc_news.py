@@ -50,8 +50,11 @@ def bbc_rss(parameter):
         item_children = item.getchildren()
         for item_child in item_children:
             if (item_child.tag == "description"):
-                s = item_child.text.replace(",", "").replace(".", "").replace(":", "").replace("'s", "").replace("'", "").replace("-", " ").split()
-                s1 = set(s)
+                if item_child.text:
+                    s = item_child.text.replace(",", "").replace(".", "").replace(":", "").replace("'s", "").replace("'", "").replace("-", " ").split()
+                    s1 = set(s)
+                else:
+                    return
                 if (my_words & s1):
                     #print "%s - %s" % (item_child.tag, item_child.text)
                     m = hashlib.md5()

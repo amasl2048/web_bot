@@ -2,7 +2,7 @@
 import urllib, urllib2
 import re
 
-def get_url(post):
+def get_memo(post):
     localhost = "https://localhost:8880/memo"
     pattern = re.compile("<body>(.*?)</body>", re.I | re.S)
     try:
@@ -33,16 +33,16 @@ def memo_cmd(cmd):
         return memo_cmd.__doc__
     elif c[0] == "stat":
         dat = urllib.urlencode({"stat": "all"})
-        return get_url(dat)
+        return get_memo(dat)
     elif c[0] == "show":
         dat = urllib.urlencode({"show": "all"})
-        return get_url(dat)
+        return get_memo(dat)
     elif c[0] == "clear":
         dat = urllib.urlencode({"clear": "all"})
-        return get_url(dat)
+        return get_memo(dat)
     elif c[0] == "add":
         dat = urllib.urlencode({"add": cmd[4:].encode("utf-8")})
-        return get_url(dat)
+        return get_memo(dat)
     else:
         return "None"
 
