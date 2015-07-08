@@ -2,6 +2,14 @@ from pandas import read_csv
 import datetime
 import re
 import shutil
+import yaml, sys
+
+# read config
+config = yaml.load(open("bot.config"))
+log_file = config["log_file"]
+sys.stdout = open(log_file, "a")
+
+csvfile = config["velo"]["csvfile"]
 
 def str2time(Series):
     patt = re.compile("(\d+):(\d+)")
@@ -56,7 +64,7 @@ def velo_cmd(cmd):
         "help" - print help
         "stat" - return velo statistics       
     '''
-    csvfile = "/shared/doc/velo.csv"
+    
     if cmd == "":
         cmd = "stat" 
     c = cmd.split()

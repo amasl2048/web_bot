@@ -17,20 +17,27 @@ import yaml
 from link_server import *
 from memo_server import *
 
-debug = False
+# read config
+config = yaml.load(open("bot.config"))
+log_file = config["log_file"]
+sys.stdout = open(log_file, "a")
+
+debug = config["debug"]
 if debug:
     from twisted.python import log
     import pprint
     log.startLogging(sys.stdout)
 
-memofile = "./memo.yml"
+
+memofile = config["web_server"]["memofile"]
+linkfile = config["web_server"]["linkfile"]
+
 if os.path.isfile(memofile) and os.path.isfile(memofile + ".iv"):
     keypass = getpass.getpass()
 else:
     print "No file: ", memofile
     sys.exit(0)
 
-linkfile = "./links.yml"
 if os.path.isfile(linkfile) and os.path.isfile(linkfile + ".iv"):
     pass
 else:

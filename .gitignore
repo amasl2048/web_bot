@@ -10,4 +10,5 @@
 *.link
 *.iv
 *.pem
+*.config
 *#

@@ -7,19 +7,25 @@ import os, base64
 from random import choice
 import jabber_ru
 import yaml
-from twisted.python import log
+
 import qrcode
 import sys
 
-log_file = open("static_url.log", "a")
-log.startLogging(log_file)
+# read config
+config = yaml.load(open("bot.config"))
+log_file = config["log_file"]
+sys.stdout = open(log_file, "a")
+
+debug = config["debug"]
+if debug:
+    from twisted.python import log
+    log.startLogging(open(log_file, "a"))
+
+host =       config["static_url"]["host"].strip()
+local_path = config["static_url"]["local"].strip()
+days =       config["static_url"]["days"]
 
 url = base64.b32encode(str(os.urandom(10))).strip()
-
-url_conf = yaml.load(open("static_url.yml"))
-host = url_conf["host"].strip()
-local_path = url_conf["local"].strip()
-days = url_conf["days"]
 
 if len(sys.argv) == 4: # becaurse "&" - the 4th argv
     if not sys.argv[1].isalnum():
@@ -48,4 +54,4 @@ reactor.callLater(timer_sec, reactor.stop)
 print "Start...", out, local_path, days
 reactor.run()
 print "Done."
-log_file.close()
+

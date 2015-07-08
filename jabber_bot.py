@@ -16,19 +16,23 @@ from com.erlang_b import erlang
 from com.link import link_cmd
 from com.memo_cli import memo_cmd
 
+# read config
+config = yaml.load(open("bot.config"))
+log_file = config["log_file"]
+sys.stdout = open(log_file, "a")
+
 class SystemInfoJabberBot(JabberBot):
 
     def check_cont(self, mess):
-        conf = {
-            "hash": "01c05ab45941795a2e99df9cf0c1e79099d875bfe9094cd5a8daedbbd6eedecba2249fc6b1e1b2a82233e22e310f7073a7177253d4dfe2bc725fd71662217f52",
-        "salt": "TgmHli0e+J3rkmUA"
-            }
+        global config
+        hsh  = config["jabber_bot"]["hash"]
+        salt = config["jabber_bot"]["salt"]
         who = mess.getFrom().getStripped()
         m = hashlib.sha512()
         m.update(who)
-        m.update(conf["salt"])
+        m.update(salt)
 
-        if (conf["hash"] == m.hexdigest()):
+        if (hsh == m.hexdigest()):
             return True
         else:
             print who
