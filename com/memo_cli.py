@@ -27,7 +27,7 @@ def memo_cmd(cmd):
     '''
 
     if cmd == "":
-        cmd = "stat" 
+        cmd = "show" 
     c = cmd.split()
     if c[0] == "help":
         return memo_cmd.__doc__

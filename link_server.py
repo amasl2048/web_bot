@@ -38,7 +38,7 @@ def link_stat(data):
         if isinstance(item, str):
             item = unicode(item, "utf-8")
         tag_list = tag_list + " " + item
-    return u"%s records with %s tags" % (len(links.keys()), tag_list)
+    return u"%s records with tags: %s" % (len(links.keys()), tag_list)
 
 def link_del(data, link_id):
     '''

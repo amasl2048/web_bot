@@ -226,7 +226,7 @@ class SystemInfoJabberBot(JabberBot):
         """Manage links"""
         if not self.check_cont(mess): return "Error"
         if len(args) == 0:
-            return link_cmd("stat").encode("utf-8")
+            return link_cmd("").encode("utf-8")
         elif not self.check_link(args):
             return "Error link"
         else:
@@ -237,7 +237,7 @@ class SystemInfoJabberBot(JabberBot):
         """Save notes"""
         if not self.check_cont(mess): return "Error"
         if len(args) == 0:
-            return memo_cmd("stat").encode("utf-8")
+            return memo_cmd("").encode("utf-8")
         else:
             return memo_cmd(args.strip()).encode("utf-8")
 
