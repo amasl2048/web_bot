@@ -180,8 +180,8 @@ class DataLink(Resource, Link):
 
         elif decode.keys()[0] == "add":
             carg = decode["add"][0].split()
-            out = self.Data.reply % self.link_add(self.link_file, Psw.password, self.link_data, unicode(carg[0], "utf-8"), unicode(carg[1], "utf-8")).encode("utf-8")
-            self.link_data = self.show_decr(self.link_file, Psw.password) # 2
+            out = self.Data.reply % self.link_add(self.linkfile, Psw.password, self.link_data, unicode(carg[0], "utf-8"), unicode(carg[1], "utf-8")).encode("utf-8")
+            self.link_data = self.Data.show_decr() # 2
             return out
 
         elif decode.keys()[0] == "show":

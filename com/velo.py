@@ -3,9 +3,18 @@ import datetime
 import re
 import shutil
 import yaml, sys
+'''
+Module
+-----
+Save recived tracking data to csv file:
+velo_cmd("add <hh:mm> <km>")
+
+Printing data statistics:
+velo_cmd("velo stat")
+'''
 
 # read config
-config = yaml.load(open("bot.config"))
+config = yaml.load(open("/etc/bot.config"))
 log_file = config["log_file"]
 sys.stdout = open(log_file, "a")
 

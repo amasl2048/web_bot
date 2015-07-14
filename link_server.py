@@ -173,11 +173,11 @@ class Link:
             utitle  = ""
 
         record = u'''%s:
-        link: "%s"
-        title: "%s"
-        tag: "%s"
-        date: "%s"
-    ''' % (link_id, lnk, utitle, tag, today)
+    link: "%s"
+    title: "%s"
+    tag: "%s"
+    date: "%s"
+''' % (link_id, lnk, utitle, tag, today)
 
         data += record
 
