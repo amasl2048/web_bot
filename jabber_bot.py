@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from jabberbot import JabberBot, botcmd
 import datetime
-import yaml
+import yaml, os
 import sys, subprocess, re
 import hashlib
 from com.yahoo_weather import weather_report as weather
@@ -27,7 +27,7 @@ except:
     print "Error: no config file"
     sys.exit(0)
 
-log_file = config["log_file"]
+log_file = os.path.join(config["work_dir"], config["log_file"]) 
 sys.stdout = open(log_file, "a")
 
 def run_jabber():

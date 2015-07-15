@@ -2,7 +2,7 @@ from pandas import read_csv
 import datetime
 import re
 import shutil
-import yaml, sys
+import yaml, sys, os
 '''
 Module
 -----
@@ -15,7 +15,7 @@ velo_cmd("velo stat")
 
 # read config
 config = yaml.load(open("/etc/bot.config"))
-log_file = config["log_file"]
+log_file = os.path.join(config["work_dir"], config["log_file"])
 sys.stdout = open(log_file, "a")
 
 csvfile = config["velo"]["csvfile"]
