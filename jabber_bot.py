@@ -17,6 +17,7 @@ from com.link import link_cmd
 from com.memo_cli import memo_cmd
 '''
 Jabber bot
+
 '''
 
 # read config

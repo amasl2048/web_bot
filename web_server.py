@@ -103,6 +103,11 @@ class DataCmd(Resource):
         if decode.keys()[0] == "psw":
             Psw.password = decode["psw"][0]
             return "\nDone.\n"
+
+        if decode.keys()[0] == "status":
+            if not Psw.password:
+                return "Running.."
+            return "\nDone.\n"
         
         elif decode.keys()[0] == "stop":
             print "\nStop reactor..\n"
@@ -231,8 +236,18 @@ def stop():
     except IOError:
         return
 
+def status():
+    data = urllib.urlencode({"status": "server"})
+    url = "https://localhost:8880/cmd"
+    res = urllib.urlopen(url, data)
+    print res.read()
+    res.close()
+
 def psw():
-    passwd = getpass.getpass()
+    if len(sys.argv) == 3: 
+        passwd = sys.argv[2] # this could be displayed in shell history!
+    else:
+        passwd = getpass.getpass() # secure input
     data = urllib.urlencode({"psw": passwd})
     url = "https://localhost:8880/cmd"
     res = urllib.urlopen(url, data)
@@ -249,6 +264,8 @@ def run():
         start();
     elif sys.argv[1] == "psw":
         psw()
+    elif sys.argv[1] == "status":
+        status()
     elif sys.argv[1] == "daemon":
          run_reactor();
     else:
