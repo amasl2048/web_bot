@@ -81,6 +81,8 @@ def velo_cmd(cmd):
         return velo_stat(csvfile)
     elif c[0] == "help":
         return velo_cmd.__doc__
+    elif c[0] == "work":
+        return velo_add(csvfile, "0:50", "11.8")
     elif c[0] == "add":
         if len(c) != 3:
             return "Error"
