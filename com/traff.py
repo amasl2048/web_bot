@@ -106,7 +106,11 @@ uptime: %s''' % (interface[0],
       dat = open(traff, "w")
       dat.writelines(stat)
       dat.close()
- 
-    return out
+    elif (param == "today"):
+        return out
 
+    if (mb(rx_diff) > 200) or (mb(tx_diff) > 200): # not report less 200Mb
+        return out
+
+    return ""
 #print traffic_report("update")
