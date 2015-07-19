@@ -21,6 +21,7 @@ def memo_cmd(cmd):
       cmd:  
         add <note> - adding new record
         show - display all notes
+        del <id> - delete note with id
         clear - delete all notes
         help - print help
         stat - return statistics       
@@ -36,6 +37,9 @@ def memo_cmd(cmd):
         return get_memo(dat)
     elif c[0] == "show":
         dat = urllib.urlencode({"show": "all"})
+        return get_memo(dat)
+    elif c[0] == "del":
+        dat = urllib.urlencode({"del": c[1]})
         return get_memo(dat)
     elif c[0] == "clear":
         dat = urllib.urlencode({"clear": "all"})

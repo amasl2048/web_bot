@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import os
+import os, yaml
 import pyelliptic
 import base64
 import shutil, datetime
@@ -8,6 +8,9 @@ import shutil, datetime
 class Memo:
 
     def memo_save(self, myfile, key, data):
+        '''
+        Encrypt and save data to myfile
+        '''
         iv = pyelliptic.Cipher.gen_IV('bf-cfb')
         bi = base64.encodestring(iv)
         ctx = pyelliptic.Cipher(key, iv, 1, ciphername='bf-cfb')
@@ -37,11 +40,24 @@ class Memo:
 ''' % (note_id, today, note)
         data += record
         self.memo_save(myfile, key, data)
-        return 
+        return
+
+    def memo_del(self, myfile, id_code, key, data):
+        """
+        Delete record with given id in yml file
+        """
+        yaml_data = yaml.load(data)
+        if yaml_data.has_key(id_code):
+            out = yaml_data.pop(id_code)
+        else:
+            return ""
+        data = yaml.dump(yaml_data, allow_unicode=True, encoding=None, default_flow_style=False) # unicode output
+        self.memo_save(myfile, key, data)
+        return out["note"]
 
     def memo_clear(self, myfile, key):
         """
-        Add data to yml file
+        Clear myfile
         """
         self.memo_save(myfile, key, "---\n")
         return

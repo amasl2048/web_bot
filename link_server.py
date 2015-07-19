@@ -42,7 +42,7 @@ class Link:
             tag_list = tag_list + " " + item
         return u"%s records with tags: %s" % (len(links.keys()), tag_list)
 
-    def link_del(data, link_id):
+    def link_del(data, link_id): #TODO
         '''
         del not work yet - for future implementation
         '''

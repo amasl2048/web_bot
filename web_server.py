@@ -144,6 +144,13 @@ class DataMemo(Resource, Memo):
             self.memo_add(self.memofile, unicode(decode["add"][0], "utf-8"), Psw.password, self.memo_data)
             self.memo_data = self.Data.show_decr()
             return self.Data.reply % "Done."
+
+        elif decode.keys()[0] == "del":
+            out = self.memo_del(self.memofile, decode["del"][0].upper(), Psw.password, self.memo_data)
+            if not out:
+                return self.Data.reply % "None"
+            self.memo_data = self.Data.show_decr()
+            return self.Data.reply % out.encode("utf-8")
         
         elif decode.keys()[0] == "show":
             return self.Data.reply % self.memo_data.encode("utf-8")
