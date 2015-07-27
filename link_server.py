@@ -20,11 +20,9 @@ class Link:
         ctext = base64.encodestring(ciphertext)
 
         shutil.copy2(ymlfile, ymlfile + "~")
-        shutil.copy2(ymlfile + ".iv", ymlfile + ".iv~")
         with open(ymlfile, "w") as f:
-            f.write(ctext) 
-        with open(ymlfile + ".iv", "w") as f:
             f.write(bi)
+            f.write(ctext) 
         return
 
     def link_stat(self, data):

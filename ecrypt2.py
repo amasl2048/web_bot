@@ -5,9 +5,7 @@ import getpass
 import base64
 import os, sys
 
-#myfile = "./test.txt"
-
-def encr(myfile, iv_file):
+def encr(myfile):
 
     if os.path.isfile(myfile):
         print "File %s already exist. Are u sure to rewrite it (y/n)?" % myfile
@@ -39,23 +37,19 @@ def encr(myfile, iv_file):
     ctext = base64.encodestring(ciphertext)
 
     with open(myfile, "w") as f:
-        f.write(ctext)
-    with open(iv_file, "w") as f:
         f.write(bi)
-    os.chmod(iv_file, 0400)    
+        f.write(ctext)
+
     print "Done."
 
-def show_decr(myfile, iv_file):
+def show_decr(myfile):
     ### decryption
-    if not os.path.isfile(iv_file):
-        print "File %s is not exist. Impossible to decript" % iv_file
-        return "Error"
-    
+   
     ctext = ""
-    with open(iv_file, "r") as f:
-        iv = base64.b64decode(f.readline())
-    for line in open(myfile, "r"):
-        ctext += line
+    with open(myfile, "r") as f:
+        iv = base64.b64decode(f.readline().strip())
+        for line in f:
+            ctext += line
 
     print "Dencrypt.."
     key = getpass.getpass()
@@ -70,8 +64,8 @@ def show_decr(myfile, iv_file):
 
     return out
 
-def save_decr(myfile, iv_file):
-    out = show_decr(myfile, iv_file)
+def save_decr(myfile):
+    out = show_decr(myfile)
     if out != "Error":
         print "File %s already exist. Are u sure to rewrite it (y/n)?" % myfile
         cmd = raw_input("save>")
@@ -82,7 +76,7 @@ def save_decr(myfile, iv_file):
             with open(myfile, "w") as f:
                 print out
                 f.write(out.encode("utf-8"))
-            os.remove(iv_file)
+
             print "ok"
     else:
         print "Error"
@@ -94,16 +88,16 @@ def check_file(myfile):
     while not os.path.isfile(myfile):
         print "File %s not exist..." % myfile
         myfile = raw_input("Enter local file name: ")
-    iv_file = myfile + ".iv"
-    return myfile, iv_file
+
+    return myfile
 
 myfile = ""
 
 if len(sys.argv) == 2:
     myfile = "./" + sys.argv[1]
-    myfile, iv_file = check_file(myfile)
+    myfile = check_file(myfile)
 else:
-    myfile, iv_file = check_file(myfile)
+    myfile = check_file(myfile)
 
 cmd = ""
 hlp = '''Enter:
@@ -119,16 +113,16 @@ hlp = '''Enter:
 while cmd != "q":
     cmd = raw_input("cmd>")
     if cmd == "e":
-        encr(myfile, iv_file)
+        encr(myfile)
     elif cmd == "d":
-        print show_decr(myfile, iv_file)
+        print show_decr(myfile)
     elif cmd == "s":
-        save_decr(myfile, iv_file)
+        save_decr(myfile)
     elif cmd == "f":
         print "File name: %s" % myfile
     elif cmd == "c":
         myfile = ""
-        myfile, iv_file = check_file(myfile)
+        myfile = check_file(myfile)
     elif cmd == "h":
         print hlp
     elif cmd == "":

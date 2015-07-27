@@ -20,11 +20,10 @@ class Memo:
         ctext = base64.encodestring(ciphertext)
 
         shutil.copy2(myfile, myfile + "~")
-        shutil.copy2(myfile + ".iv", myfile + ".iv~")
         with open(myfile, "w") as f:
-            f.write(ctext) 
-        with open(myfile + ".iv", "w") as f:
             f.write(bi)
+            f.write(ctext) 
+
         return
 
     def memo_add(self, myfile, note, key, data):

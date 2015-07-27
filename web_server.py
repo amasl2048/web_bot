@@ -38,11 +38,11 @@ def load_config(bot_config):
     memo_file = os.path.join(config["work_dir"], config["web_server"]["memofile"])
     link_file = os.path.join(config["work_dir"], config["web_server"]["linkfile"])
 
-    if not ( os.path.isfile(memo_file) and os.path.isfile(memo_file + ".iv")):
+    if not os.path.isfile(memo_file):
         print "No file: ", memo_file
         sys.exit(0)
 
-    if not ( os.path.isfile(link_file) and os.path.isfile(link_file + ".iv")):
+    if not os.path.isfile(link_file):
         print "No file: ", link_file
         sys.exit(0)
     return memo_file, link_file
@@ -73,10 +73,10 @@ class WebData:
     def show_decr(self):
         print "\nDecrypting..."
         ctext = ""
-        with open(self.my_file + ".iv", "r") as f:
-            iv = base64.b64decode(f.readline())
-        for line in open(self.my_file, "r"):
-            ctext += line
+        with open(self.my_file, "r") as f:
+            iv = base64.b64decode(f.readline().strip())
+            for line in f:
+                ctext += line
 
         ctx2 = pyelliptic.Cipher(Psw.password, iv, 0, ciphername='bf-cfb')
         try:

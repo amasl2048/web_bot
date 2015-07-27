@@ -3,6 +3,7 @@
 *.pyc
 *.txt
 *.yml
+*.dat
 *.htm*
 *.log
 *.png
