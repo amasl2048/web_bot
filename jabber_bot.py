@@ -5,6 +5,7 @@ import datetime
 import yaml, os
 import sys, subprocess, re
 import hashlib
+import urllib
 from com.yahoo_weather import weather_report as weather
 from com.rbc_currency import rbc_get as rbc
 from com.bbc_news import bbc_rss as bbc
@@ -94,6 +95,16 @@ def run_jabber():
             if args.strip() == "stop":
                 print "Jabber bot is stoping..."
                 sys.exit(0)
+            if args.strip() == "status":
+                    data = urllib.urlencode({"status": "server"})
+                    url = "https://localhost:8880/cmd"
+                    try:
+                        res = urllib.urlopen(url, data)
+                    except:
+                        return "no connection"
+                    out = res.read()
+                    res.close()
+                    return out
             return "error"
 
         @botcmd

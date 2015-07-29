@@ -49,6 +49,7 @@ def load_config(bot_config):
 
 class Psw:
     password = ""
+    status = ""
 
 class WebData:
     reply = '''<html>
@@ -80,15 +81,20 @@ class WebData:
 
         ctx2 = pyelliptic.Cipher(Psw.password, iv, 0, ciphername='bf-cfb')
         try:
+            Psw.status = "\nOK\n"
             return unicode(ctx2.ciphering(base64.b64decode(ctext)), "utf-8")
         except:
             time.sleep(1)
+            Psw.status = "\nFail\n"
             print "Error: wrong pass \"%s\"" % Psw.password
 
 
 class DataCmd(Resource):
     isLeaf = True
-    
+
+    def __init__(self, memo_file):
+        self.Data = WebData(memo_file)
+        
     def render_POST(self, request):
         global debug
         newdata = request.content.getvalue()
@@ -102,12 +108,14 @@ class DataCmd(Resource):
 
         if decode.keys()[0] == "psw":
             Psw.password = decode["psw"][0]
-            return "\nDone.\n"
+            if self.Data.show_decr():
+                Psw.status = "\nOK\n"
+            return Psw.status
 
         if decode.keys()[0] == "status":
             if not Psw.password:
-                return "Running.."
-            return "\nDone.\n"
+                Psw.status = "Running.."
+            return Psw.status
         
         elif decode.keys()[0] == "stop":
             print "\nStop reactor..\n"
@@ -225,7 +233,7 @@ def run_reactor():
     certificate = ssl.PrivateCertificate.loadPEM(certData)
 
     root = Resource()
-    root.putChild("cmd",  DataCmd())
+    root.putChild("cmd",  DataCmd(memo_file))
     root.putChild("memo", DataMemo(memo_file))
     root.putChild("link", DataLink(link_file))
     factory = Site(root)
