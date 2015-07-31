@@ -18,7 +18,12 @@ config = yaml.load(open("/etc/bot.config"))
 log_file = os.path.join(config["work_dir"], config["log_file"])
 sys.stdout = open(log_file, "a")
 
+debug   = config["velo"]["debug"]
 csvfile = config["velo"]["csvfile"]
+work    = config["velo"]["work"]
+
+if debug:
+    print "velo work: ", work
 
 def str2time(Series):
     patt = re.compile("(\d+):(\d+)")
@@ -49,10 +54,10 @@ Velo:\teach %s days
 def velo_add(csvfile, t, km):
     ptime = re.compile("^\d{1,2}:\d{2}$")
     if not ptime.search(t):
-        return "Error"
+        return "Error time"
     pkm = re.compile("^\d+\.?\d{0,2}$")
     if not pkm.search(km):
-        return "Error"
+        return "Error km"
 
     df = read_csv(csvfile, sep='\t', header=0, index_col=0, parse_dates=[1,2])
     today = datetime.date.today()
@@ -71,9 +76,12 @@ def velo_cmd(cmd):
       cmd:  
         "add <h:mm> <km>"  - adding new data to csv
         "help" - print help
-        "stat" - return velo statistics       
+        "stat" - return velo statistics
+        "work" - add default time/distance to work
     '''
-    
+    if debug:
+        print "velo: ", cmd
+
     if cmd == "":
         cmd = "stat" 
     c = cmd.split()
@@ -82,7 +90,7 @@ def velo_cmd(cmd):
     elif c[0] == "help":
         return velo_cmd.__doc__
     elif c[0] == "work":
-        return velo_add(csvfile, "0:50", "11.8")
+        return velo_add(csvfile, work[0], work[1])
     elif c[0] == "add":
         if len(c) != 3:
             return "Error"

@@ -243,7 +243,7 @@ def run_jabber():
         @botcmd
         def velo( self, mess, args):
             """Displays velo statistics"""
-            if not self.check_cont(mess): return "Error"
+            if not self.check_cont(mess): return "Error mess"
             if len(args) == 0:
                 return str(velo("stat"))
             elif self.check_cmd(args):
