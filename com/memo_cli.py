@@ -24,7 +24,8 @@ def memo_cmd(cmd):
         del <id> - delete note with id
         clear - delete all notes
         help - print help
-        stat - return statistics       
+        stat - return statistics
+        search <key> - search in notes
     '''
 
     if cmd == "":
@@ -37,6 +38,9 @@ def memo_cmd(cmd):
         return get_memo(dat)
     elif c[0] == "show":
         dat = urllib.urlencode({"show": "all"})
+        return get_memo(dat)
+    elif c[0] == "search" or c[0] == "s":
+        dat = urllib.urlencode({"search": c[1]})
         return get_memo(dat)
     elif c[0] == "del":
         dat = urllib.urlencode({"del": c[1]})

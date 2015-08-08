@@ -4,6 +4,7 @@ import os, yaml
 import pyelliptic
 import base64
 import shutil, datetime
+import re
 
 class Memo:
 
@@ -35,7 +36,7 @@ class Memo:
 
         record = u'''%s:
     date: %s
-    note: %s
+    note: "%s"
 ''' % (note_id, today, note)
         data += record
         self.memo_save(myfile, key, data)
@@ -54,10 +55,28 @@ class Memo:
         self.memo_save(myfile, key, data)
         return out["note"]
 
+    def note_search(self, data, note):
+        """
+        Search pattern in note record
+        Ignore case for cyrillic - hack with lower case
+        """
+        notes = yaml.load(data)
+        count = 0
+        report = ""
+        patt = re.compile( note.lower(), re.L | re.I) # re.I not work with cyrillic?
+        for key, val in notes.iteritems():
+            if isinstance(val["note"], str):
+                unote = unicode(val["note"], "utf-8").lower() # hack
+            else:
+                unote = val["note"].lower()
+            if patt.search( unote  ):
+                report += str(val["date"]) + "\n" + val["note"] + "\n"
+                count += 1
+        return u"%s--\nFound: %s records with note %s" % (report, count, note)
+
     def memo_clear(self, myfile, key):
         """
         Clear myfile
         """
         self.memo_save(myfile, key, "---\n")
         return
-

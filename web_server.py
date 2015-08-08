@@ -162,6 +162,9 @@ class DataMemo(Resource, Memo):
         
         elif decode.keys()[0] == "show":
             return self.Data.reply % self.memo_data.encode("utf-8")
+
+        elif decode.keys()[0] == "search":
+            return self.Data.reply % self.note_search(self.memo_data, unicode(decode["search"][0],("utf-8"))).encode("utf-8")
         
         elif decode.keys()[0] == "clear":
             self.memo_clear(self.memofile, Psw.password)
@@ -260,14 +263,15 @@ def status():
 
 def psw():
     if len(sys.argv) == 3: 
-        passwd = sys.argv[2] # this could be displayed in shell history!
+        passwd = sys.argv[2] # this will be displayed in shell history!
     else:
         passwd = getpass.getpass() # secure input
-    data = urllib.urlencode({"psw": passwd})
-    url = "https://localhost:8880/cmd"
-    res = urllib.urlopen(url, data)
-    print res.read()
-    res.close()
+    if passwd:
+        data = urllib.urlencode({"psw": passwd})
+        url = "https://localhost:8880/cmd"
+        res = urllib.urlopen(url, data)
+        print res.read()
+        res.close()
 
 def run():
     if sys.argv[1] == "start":
