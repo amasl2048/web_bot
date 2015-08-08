@@ -40,16 +40,9 @@ class Link:
             tag_list = tag_list + " " + item
         return u"%s records with tags: %s" % (len(links.keys()), tag_list)
 
-    def link_del(data, link_id): #TODO
-        '''
-        del not work yet - for future implementation
-        '''
-        links = yaml.load(data)
-        return links.pop(link_id, "None")
-
     def link_uniq(self, data, link_id):
         '''
-        Check if link hash is unique
+        Return True if link hash is unique
         '''
 
         links = yaml.load(data)
@@ -109,6 +102,12 @@ class Link:
         report += self.link_title(data, keyword) + "\n"
         return report
 
+    def get_hash(self, lnk): # lnk w/o "http"
+        m = hashlib.md5()
+        m.update(lnk.encode("utf-8")) 
+        return (m.hexdigest())[-8:] # get last 8 hex digits
+    
+
     def link_add(self, ymlfile, key, data, link, tag):
         """
         GET page from link
@@ -124,9 +123,8 @@ class Link:
             prefix, lnk = link.split(sep)
 
         today = datetime.date.today()
-        m = hashlib.md5()
-        m.update(lnk.encode("utf-8")) # lnk w/o "http"
-        link_id = (m.hexdigest())[-8:] # get last 8 hex digits
+
+        link_id = self.get_hash(lnk) # get last 8 hex digits
 
         if not self.link_uniq(data, link_id):
             return "Sorry: duplicate link..."
@@ -182,4 +180,18 @@ class Link:
         self.link_save(ymlfile, key, data)
 
         return u"%s \t %s \n %s" % (lnk.lower(), utitle, self.link_stat(data))
+
+    def link_del(self, myfile, key, data, link): 
+
+        yaml_data = yaml.load(data)
+        prefix, lnk = link.split(r"://")
+        link_id = self.get_hash(lnk) # w/o http://
+
+        if yaml_data.has_key(link_id):
+            out = yaml_data.pop(link_id)
+        else:
+            return ""
+        data = yaml.dump(yaml_data, allow_unicode=True, encoding=None, default_flow_style=False) # unicode output
+        self.link_save(myfile, key, data)
+        return out["link"]
 

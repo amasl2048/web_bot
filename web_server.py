@@ -211,7 +211,11 @@ class DataLink(Resource, Link):
             return self.Data.reply % self.link_data.encode("utf-8")
 
         elif decode.keys()[0] == "del":
-            return self.Data.reply % self.link_del(self.Data.link_data, decode["del"][0]).encode("utf-8")
+            out = self.link_del(self.linkfile, Psw.password, self.link_data, unicode(decode["del"][0].lower(), "utf-8"))
+            if not out:
+                return self.Data.reply % "None"
+            self.link_data = self.Data.show_decr()
+            return self.Data.reply % out.encode("utf-8")
 
         elif decode.keys()[0] == "tag":
             return self.Data.reply % self.link_tag(self.link_data, unicode(decode["tag"][0], "utf-8")).encode("utf-8")
