@@ -5,6 +5,7 @@ from com.rbc_currency import rbc_get as rbc
 from com.bbc_news import bbc_rss as bbc
 from com.micex import ex_rate as rate
 from com.traff import traffic_report as traffic
+from com.nasdaq import get_price
 import jabber_ru
 
 import sys
@@ -19,6 +20,7 @@ except:
         rbc_y - CBRF currency rates from RBC (yearly stats) 
         bbc - news from BBC rss feed by keywords from my_words.txt
         rate - last ex-rates changes from MICEX
+        nasdaq [symbol] [percent_limit] - get share price from NASDAQ
 '''
     sys.exit(0)
 
@@ -34,6 +36,8 @@ elif (key == "rate"):
     out = rate("changes")
 elif (key == "traff"):
     out = traffic("update")
+elif (key == "nasdaq"):
+    out = get_price(sys.argv[2], sys.argv[3])
 else:
     out = ""
     print "No data"

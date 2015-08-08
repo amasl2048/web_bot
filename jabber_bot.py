@@ -16,6 +16,7 @@ from com.velo import velo_cmd as velo
 from com.erlang_b import erlang
 from com.link import link_cmd
 from com.memo_cli import memo_cmd
+from com.nasdaq import get_price
 '''
 Jabber bot
 
@@ -30,10 +31,9 @@ except:
     sys.exit(0)
 
 log_file = os.path.join(config["work_dir"], config["log_file"]) 
-sys.stdout = open(log_file, "a")
 
 def run_jabber():
-
+    sys.stdout = open(log_file, "a")
     class SystemInfoJabberBot(JabberBot):
 
         def check_cont(self, mess):
@@ -239,6 +239,16 @@ def run_jabber():
             """Displays CBRF currency ex-rate from RBC"""
             if not self.check_cont(mess): return "Error"
             return str(rbc("m"))
+
+        @botcmd
+        def nasdaq( self, mess, args):
+            """Displays NASDAQ share price for symbol"""
+            if not self.check_cont(mess): return "Error"
+            if len(args) == 0:
+                return "Error"
+            elif not self.check_url(args):
+                return "Error symbol"
+            return str(get_price(args.strip(), 0))
 
         @botcmd
         def velo( self, mess, args):
