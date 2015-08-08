@@ -70,7 +70,7 @@ class Memo:
             else:
                 unote = val["note"].lower()
             if patt.search( unote  ):
-                report += str(val["date"]) + "\n" + val["note"] + "\n"
+                report += key + "\t" + str(val["date"]) + "\n" + val["note"] + "\n"
                 count += 1
         return u"%s--\nFound: %s records with note %s" % (report, count, note)
 
