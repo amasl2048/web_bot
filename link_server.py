@@ -33,7 +33,11 @@ class Link:
         tags = set()
         tag_list = u""
         for key, val in links.iteritems():
-            tags.add(val["tag"])
+            if isinstance(val["tag"], str):
+                tags.add(val["tag"])
+            else:
+                for each in val["tag"]:
+                    tags.add(each)
         for item in tags:
             if isinstance(item, str):
                 item = unicode(item, "utf-8")
@@ -60,7 +64,7 @@ class Link:
         count = 0
         report = ""
         for key, val in links.iteritems():
-            if val["tag"] == tag:
+            if tag in val["tag"]:
                 report += val["link"] + " - " + val["title"] + "\n"
                 count += 1
         return u"%s--\nFound: %s records with tag %s" % (report, count, tag)
@@ -108,7 +112,7 @@ class Link:
         return (m.hexdigest())[-8:] # get last 8 hex digits
     
 
-    def link_add(self, ymlfile, key, data, link, tag):
+    def link_add(self, ymlfile, key, data, link, tags):
         """
         GET page from link
         Parse charset, title
@@ -171,9 +175,9 @@ class Link:
         record = u'''%s:
     link: "%s"
     title: "%s"
-    tag: "%s"
+    tag: %s
     date: "%s"
-''' % (link_id, lnk, utitle, tag, today)
+''' % (link_id, lnk, utitle, tags, today)
 
         data += record
 

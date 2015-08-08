@@ -47,35 +47,35 @@ def link_cmd(cmd):
     elif c[0] == "del":
         if len(c) != 2:
             return "Error"
-        dat = urllib.urlencode({"del": cmd[4:].encode("utf-8")})
+        dat = urllib.urlencode({"del": c[1].encode("utf-8")})
         return get_link(dat)
 
     elif c[0] == "tag":
         if len(c) != 2:
             return "Error"
-        dat = urllib.urlencode({"tag": cmd[4:].encode("utf-8")})
+        dat = urllib.urlencode({"tag": c[1].encode("utf-8")})
         return get_link(dat)
 
     elif c[0] == "url":
         if len(c) != 2:
             return "Error"
-        dat = urllib.urlencode({"url": cmd[4:].encode("utf-8")})
+        dat = urllib.urlencode({"url": c[1].encode("utf-8")})
         return get_link(dat)
 
     elif c[0] == "title":
         if len(c) != 2:
             return "Error"
-        dat = urllib.urlencode({"title": cmd[6:].encode("utf-8")})
+        dat = urllib.urlencode({"title": c[1].encode("utf-8")})
         return get_link(dat)
 
-    elif c[0] == "search":
+    elif c[0] == "search" or c[0] == "s":
         if len(c) != 2:
             return "Error"
-        dat = urllib.urlencode({"search": cmd[7:].encode("utf-8")})
+        dat = urllib.urlencode({"search": c[1].encode("utf-8")})
         return get_link(dat)
 
     elif c[0] == "add":
-        if len(c) != 3:
+        if len(c) < 3:
             return "Usage: link add <url> <tag>"
         dat = urllib.urlencode({"add": cmd[4:].encode("utf-8")})
         return get_link(dat)
