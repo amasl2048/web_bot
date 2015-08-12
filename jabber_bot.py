@@ -31,9 +31,10 @@ except:
     sys.exit(0)
 
 log_file = os.path.join(config["work_dir"], config["log_file"]) 
+sys.stdout = open(log_file, "a")
 
 def run_jabber():
-    sys.stdout = open(log_file, "a")
+
     class SystemInfoJabberBot(JabberBot):
 
         def check_cont(self, mess):

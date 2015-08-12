@@ -27,9 +27,9 @@ def get_price(symbol, limit):
 
     def get_data(out):
         plast = re.compile('<div id="qwidget_lastsale" class="qwidget-dollar">(.*?)</div>')
-        pnet  = re.compile('<div id="qwidget_netchange" class="qwidget-cents qwidget-Green">(.*?)</div>')
+        pnet  = re.compile('<div id="qwidget_netchange" class="qwidget-cents qwidget-\w+">(.*?)</div>')
         parr  = re.compile('<div id="qwidget-arrow"><div class="marginLR10px arrow-(.*?)"></div></div>')
-        pperc = re.compile('<div id="qwidget_percent" class="qwidget-percent qwidget-Green" style="white-space:nowrap">(.*?)%</div>')
+        pperc = re.compile('<div id="qwidget_percent" class="qwidget-percent qwidget-\w+" style="white-space:nowrap">(.*?)%</div>')
         ptime = re.compile('<span id="qwidget_markettime">(.*?)&nbsp;</span>')
 
         return plast.findall(out)[0],\
@@ -53,3 +53,4 @@ def get_price(symbol, limit):
 
     return
 
+#get_price("", 0)
