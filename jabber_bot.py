@@ -91,7 +91,11 @@ def run_jabber():
 
         @botcmd
         def cmd( self, mess, args):
-            """Control jabber service"""
+            """
+	    Control jabber service: cmd <>
+	    stop
+	    status
+	    """
             if not self.check_cont(mess): return "Error"
             if args.strip() == "stop":
                 print "Jabber bot is stoping..."
