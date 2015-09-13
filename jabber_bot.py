@@ -66,7 +66,7 @@ def run_jabber():
             return False
 
         def check_link( self, arg):
-            r = re.compile(u"^[0-9a-zA-Zа-яА-Я.:-/\s]+$" )
+            r = re.compile(u"^[0-9a-zA-Zа-яА-Я.:/\s-]+$" )
             if ( (len(arg) < 256) and (r.search(arg.strip())) ):
                 return True
             return False
