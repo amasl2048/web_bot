@@ -93,7 +93,7 @@ uptime: %s''' % (interface[0],
     if week == "0":
         rx_week = 0
         tx_week = 0
-    if day == "1":
+    if day == "01":
         rx_month = 0
         tx_month = 0
     
