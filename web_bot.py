@@ -1,11 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from com.yahoo_weather import weather_report as weather
-from com.rbc_currency import rbc_get as rbc
-from com.bbc_news import bbc_rss as bbc
-from com.micex import ex_rate as rate
-from com.traff import traffic_report as traffic
-from com.nasdaq import get_price
+
+from com import *
 import jabber_ru
 
 import sys
@@ -25,19 +21,21 @@ except:
     sys.exit(0)
 
 if (key == "weather"):
-    out = weather("diff")
+    out = yahoo_weather.weather_report("diff")
 elif (key == "rbc_m"):
-    out = rbc("m")
+    out = rbc_currency.rbc_get("m")
 elif (key == "rbc_y"):
-    out = rbc("y")
+    out = rbc_currency.rbc_get("y")
 elif (key == "bbc"):
-    out = bbc("new")
+    out = bbc_news.bbc_rss("new")
 elif (key == "rate"):
-    out = rate("changes")
+    out = micex.ex_rate("changes")
 elif (key == "traff"):
-    out = traffic("update")
+    out = traff.traffic_report("update")
 elif (key == "nasdaq"):
-    out = get_price(sys.argv[2], sys.argv[3])
+    out = nasdaq.get_price(sys.argv[2], sys.argv[3])
+elif (key == "counter"):
+    out = tlog.tcount("today")
 else:
     out = ""
     print "No data"

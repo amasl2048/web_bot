@@ -1,5 +1,14 @@
 # -*- coding: utf-8 -*-
-__all__ = ["rbc_currency",
-            "yahoo_weather",
+__all__ = ["yahoo_weather",
+            "rbc_currency",
             "bbc_news",
-            "micex"]
+            "micex",
+            "totp_check",
+            "traff",
+            "velo",
+            "erlang_b",
+            "link",
+            "memo_cli",
+            "nasdaq",
+            "tlog"]
+

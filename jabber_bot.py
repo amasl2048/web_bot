@@ -6,17 +6,10 @@ import yaml, os
 import sys, subprocess, re
 import hashlib
 import urllib
-from com.yahoo_weather import weather_report as weather
-from com.rbc_currency import rbc_get as rbc
-from com.bbc_news import bbc_rss as bbc
-from com.micex import ex_rate as rate
-from com.totp_check import totp_accept as totpcheck
-from com.traff import traffic_report as traffic
-from com.velo import velo_cmd as velo
-from com.erlang_b import erlang
-from com.link import link_cmd
-from com.memo_cli import memo_cmd
-from com.nasdaq import get_price
+import logging
+
+from com import *
+
 '''
 Jabber bot
 
@@ -32,6 +25,8 @@ except:
 
 log_file = os.path.join(config["work_dir"], config["log_file"]) 
 sys.stdout = open(log_file, "a")
+
+logging.basicConfig(filename=config["log"], level=logging.ERROR)
 
 def run_jabber():
 
@@ -86,7 +81,7 @@ def run_jabber():
         def totp( self, mess, args):
             """Check TOTP auth"""
             if not self.check_cont(mess): return "Error"
-            if totpcheck(args): return "ok"
+            if totp_check.totp_accept(args): return "ok"
             return "error"
 
         @botcmd
@@ -116,7 +111,18 @@ def run_jabber():
         def traff( self, mess, args):
             """Traffic data from last update"""
             if not self.check_cont(mess): return "Error"
-            return str(traffic("today"))
+            return str(traff.traffic_report("today"))
+
+        @botcmd
+        def counter( self, mess, args):
+            """Twisted log counter"""
+            #print type(args), args
+            if not self.check_cont(mess): return "Error"
+            if (self.check_url(args)) or args == "":
+                s = str(args).strip()
+            else:
+                return "error"
+            return str(tlog.tcount(s))
 
         @botcmd
         def serverinfo( self, mess, args):
@@ -225,25 +231,25 @@ def run_jabber():
         def weather( self, mess, args):
             """Displays weather forcast from yahoo"""
             if not self.check_cont(mess): return "Error"
-            return str(weather("all"))
+            return str(yahoo_weather.weather_report("all"))
 
         @botcmd
         def bbc( self, mess, args):
             """Displays news from BBC rss feed"""
             if not self.check_cont(mess): return "Error"
-            return str(bbc("all"))
+            return str(bbc_news.bbc_rss("all"))
 
         @botcmd
         def rate( self, mess, args):
             """Displays MICEX USD and EUR to RUR ex-rates"""
             if not self.check_cont(mess): return "Error"
-            return str(rate("all"))
+            return str(micex.ex_rate("all"))
 
         @botcmd
         def rbc( self, mess, args):
             """Displays CBRF currency ex-rate from RBC"""
             if not self.check_cont(mess): return "Error"
-            return str(rbc("m"))
+            return str(rbc_currency.rbc_get("m"))
 
         @botcmd
         def nasdaq( self, mess, args):
@@ -253,53 +259,53 @@ def run_jabber():
                 return "Error"
             elif not self.check_url(args):
                 return "Error symbol"
-            return str(get_price(args.strip(), 0))
+            return str(nasdaq.get_price(args.strip(), 0))
 
         @botcmd
         def velo( self, mess, args):
             """Displays velo statistics"""
             if not self.check_cont(mess): return "Error mess"
             if len(args) == 0:
-                return str(velo("stat"))
+                return str(velo.velo_cmd("stat"))
             elif self.check_cmd(args):
                 s = str(args).strip()
                 #print s
             else:
                 return "Error"
-            return str(velo(s))
+            return str(velo.velo_cmd(s))
 
         @botcmd
         def link( self, mess, args):
             """Manage links"""
             if not self.check_cont(mess): return "Error"
             if len(args) == 0:
-                return link_cmd("").encode("utf-8")
+                return link.link_cmd("").encode("utf-8")
             elif not self.check_link(args):
                 return "Error link"
             else:
-                return link_cmd(args.strip()).encode("utf-8")
+                return link.link_cmd(args.strip()).encode("utf-8")
 
         @botcmd
         def memo( self, mess, args):
             """Save notes"""
             if not self.check_cont(mess): return "Error"
             if len(args) == 0:
-                return memo_cmd("").encode("utf-8")
+                return memo_cli.memo_cmd("").encode("utf-8")
             else:
-                return memo_cmd(args.strip()).encode("utf-8")
+                return memo_cli.memo_cmd(args.strip()).encode("utf-8")
 
         @botcmd
         def erlang( self, mess, args):
             """Erlang B calculator"""
             if not self.check_cont(mess): return "Error"
             if len(args) == 0:
-                return str(erlang(""))
+                return str(erlang_b.erlang(""))
             elif self.check_cmd(args):
                 s = str(args).strip()
                 #print s
             else:
                 return "Error"
-            return str(erlang(s))
+            return str(erlang_b.erlang(s))
 
     username = jabber_conf["username"]
     password = jabber_conf["password"]
