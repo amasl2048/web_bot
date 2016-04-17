@@ -31,11 +31,17 @@ def str2time(Series):
     return datetime.timedelta(hours=int(h), minutes=int(m))
 
 def velo_stat(csvfile):
-    df = read_csv(csvfile, sep='\t', header=0, index_col=0, parse_dates=[1])
+    df_all = read_csv(csvfile, sep='\t', header=0, index_col=0, parse_dates=[1])
+    #st_all = df_all["date"].size
     today = datetime.datetime.today()
+    t_year = today.year
+    # filter only this year
+    df = df_all[df_all["date"] > datetime.datetime(t_year, 1, 1)]
     st = df["date"].size
+    if st == 0:
+        return "Null"
     df["timedelta"] = df["time"].map(str2time)
-    ttime = round(df["timedelta"].sum()/1000/1000/1000/60/60., 1)
+    ttime = round(df["timedelta"].sum()/1000/1000/1000/60/60., 2)
 
     out = """Totaly:\t%s km %s times
 Time:\t%s hours
@@ -45,8 +51,8 @@ Velo:\teach %s days
 """  % (df["km"].sum(), st,
     ttime,
     round(df["km"].mean(), 1),
-    (today - df.loc[st, "date"]).days,
-    (today - df.loc[1, "date"]).days / st 
+    (today - df.loc[df.index.tolist()[-1], "date"]).days, # last item
+    (today - df.loc[df.index.tolist()[0], "date"]).days / st # first item
     )
 
     return out
@@ -95,5 +101,5 @@ def velo_cmd(cmd):
         if len(c) != 3:
             return "Error"
         return velo_add(csvfile, c[1], c[2])
-    
+
 #print velo_cmd("")

@@ -213,7 +213,7 @@ def run_jabber():
             cmd.append("./static_url.py")
             cmd += s.split()
             cmd.append("&")
-            #print cmd
+            print cmd
             p = subprocess.Popen(cmd,
                                  stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE)
