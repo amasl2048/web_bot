@@ -1,5 +1,5 @@
 from pandas import read_csv
-import datetime
+import time, datetime
 import re
 import shutil
 import yaml, sys, os
@@ -22,6 +22,8 @@ debug   = config["velo"]["debug"]
 csvfile = config["velo"]["csvfile"]
 work    = config["velo"]["work"]
 
+t_year = int(time.strftime("%Y")) # this year
+
 if debug:
     print "velo work: ", work
 
@@ -30,13 +32,12 @@ def str2time(Series):
     h,m = patt.search(Series).groups()
     return datetime.timedelta(hours=int(h), minutes=int(m))
 
-def velo_stat(csvfile):
+def velo_stat(csvfile, year):
     df_all = read_csv(csvfile, sep='\t', header=0, index_col=0, parse_dates=[1])
     #st_all = df_all["date"].size
     today = datetime.datetime.today()
-    t_year = today.year
     # filter only this year
-    df = df_all[df_all["date"] > datetime.datetime(t_year, 1, 1)]
+    df = df_all[ (df_all["date"] > datetime.datetime(year, 1, 1)) & (df_all["date"] < datetime.datetime(year+1, 1, 1)) ]
     st = df["date"].size
     if st == 0:
         return "Null"
@@ -74,7 +75,7 @@ def velo_add(csvfile, t, km):
     with open(csvfile, "a") as f:
         f.write(row)
 
-    return velo_stat(csvfile)
+    return velo_stat(csvfile, t_year)
 
 def velo_cmd(cmd):
     '''
@@ -82,17 +83,19 @@ def velo_cmd(cmd):
       cmd:  
         "add <h:mm> <km>"  - adding new data to csv
         "help" - print help
-        "stat" - return velo statistics
+        "stat [year]" - return velo statistics for the year
         "work" - add default time/distance to work
     '''
     if debug:
-        print "velo: ", cmd
+        print "velo", cmd
 
     if cmd == "":
         cmd = "stat" 
     c = cmd.split()
     if c[0] == "stat":
-        return velo_stat(csvfile)
+        if len(c) == 2:
+            return velo_stat(csvfile, int(c[1]))
+        return velo_stat(csvfile, t_year)
     elif c[0] == "help":
         return velo_cmd.__doc__
     elif c[0] == "work":
@@ -102,4 +105,4 @@ def velo_cmd(cmd):
             return "Error"
         return velo_add(csvfile, c[1], c[2])
 
-#print velo_cmd("")
+#print velo_cmd("stat 2016")
