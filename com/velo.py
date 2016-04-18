@@ -1,4 +1,5 @@
 from pandas import read_csv
+from numpy import timedelta64
 import time, datetime
 import re
 import shutil
@@ -32,6 +33,9 @@ def str2time(Series):
     h,m = patt.search(Series).groups()
     return datetime.timedelta(hours=int(h), minutes=int(m))
 
+def time2hours(Series):
+    return Series
+
 def velo_stat(csvfile, year):
     df_all = read_csv(csvfile, sep='\t', header=0, index_col=0, parse_dates=[1])
     #st_all = df_all["date"].size
@@ -58,6 +62,22 @@ Velo:\teach %s days
 
     return out
 
+def velo_top(csvfile):
+    df_all = read_csv(csvfile, sep='\t', header=0, index_col=0, parse_dates=[1])
+    # more distance
+    report = str(df_all.sort(["km"], ascending=False)[:3][["date", "km"]])
+
+    # longest time
+    df_all["timedelta"] = df_all["time"].map(str2time)
+    report += "\n" + str( df_all.sort(["timedelta"], ascending=False)[:3][["date", 'time']])
+
+    # fastest speed
+    df_all["hours"] = df_all.timedelta / timedelta64(1, "h")
+    df_all["speed"] = df_all.km / df_all.hours 
+    report += "\n" + str(df_all.sort(["speed"], ascending=False)[:3][["date", "time", "km", "speed"]])
+    
+    return report
+    
 def velo_add(csvfile, t, km):
     ptime = re.compile("^\d{1,2}:\d{2}$")
     if not ptime.search(t):
@@ -85,6 +105,7 @@ def velo_cmd(cmd):
         "help" - print help
         "stat [year]" - return velo statistics for the year
         "work" - add default time/distance to work
+        "top" - the best achievement
     '''
     if debug:
         print "velo", cmd
@@ -98,6 +119,8 @@ def velo_cmd(cmd):
         return velo_stat(csvfile, t_year)
     elif c[0] == "help":
         return velo_cmd.__doc__
+    elif c[0] == "top":
+        return velo_top(csvfile)
     elif c[0] == "work":
         return velo_add(csvfile, work[0], work[1])
     elif c[0] == "add":
@@ -105,4 +128,4 @@ def velo_cmd(cmd):
             return "Error"
         return velo_add(csvfile, c[1], c[2])
 
-#print velo_cmd("stat 2016")
+#print velo_cmd("top")
