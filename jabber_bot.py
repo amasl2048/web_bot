@@ -89,7 +89,8 @@ def run_jabber():
             """
 	    Control jabber service: cmd <>
 	    stop
-	    status
+	    status (return web_server "Running" or "OK")
+        psw <password>
 	    """
             if not self.check_cont(mess): return "Error"
             if args.strip() == "stop":
@@ -217,7 +218,7 @@ def run_jabber():
             p = subprocess.Popen(cmd,
                                  stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE)
-            #out, err = p.communicate()
+            out, err = p.communicate()
             return "Done."
 
         @botcmd

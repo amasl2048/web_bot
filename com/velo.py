@@ -3,7 +3,7 @@ from numpy import timedelta64
 import time, datetime
 import re
 import shutil
-import yaml, sys, os
+import yaml, os
 '''
 Module
 -----
@@ -17,7 +17,7 @@ velo_cmd("velo stat")
 # read config
 config = yaml.load(open("/etc/bot.config"))
 log_file = os.path.join(config["work_dir"], config["log_file"])
-sys.stdout = open(log_file, "a")
+#sys.stdout = open(log_file, "a")
 
 debug   = config["velo"]["debug"]
 csvfile = config["velo"]["csvfile"]
@@ -25,17 +25,26 @@ work    = config["velo"]["work"]
 
 t_year = int(time.strftime("%Y")) # this year
 
+def prnt_log(msg):
+    with open(log_file, "a") as f:
+        f.write(msg + "\n")
+
 if debug:
-    print "velo work: ", work
+    prnt_log("velo work: %s" % work)
 
 def str2time(Series):
     patt = re.compile("(\d+):(\d+)")
     h,m = patt.search(Series).groups()
     return datetime.timedelta(hours=int(h), minutes=int(m))
 
-def time2hours(Series):
-    return Series
+#def time2hours(Series):
+#    return Series
 
+def dec2min(hours):
+    h = int(hours)
+    m = hours - h
+    return "%sh %sm" % (h, int(60 * m) )
+    
 def velo_stat(csvfile, year):
     df_all = read_csv(csvfile, sep='\t', header=0, index_col=0, parse_dates=[1])
     #st_all = df_all["date"].size
@@ -46,7 +55,7 @@ def velo_stat(csvfile, year):
     if st == 0:
         return "Null"
     df["timedelta"] = df["time"].map(str2time)
-    ttime = round(df["timedelta"].sum()/1000/1000/1000/60/60., 2)
+    ttime = df["timedelta"].sum()/1000/1000/1000/60/60.
 
     out = """Totaly:\t%s km %s times
 Time:\t%s hours
@@ -54,7 +63,7 @@ Avg:\t%s km per day
 Last:\t%s days
 Velo:\teach %s days
 """  % (df["km"].sum(), st,
-    ttime,
+    dec2min(ttime),
     round(df["km"].mean(), 1),
     (today - df.loc[df.index.tolist()[-1], "date"]).days, # last item
     (today - df.loc[df.index.tolist()[0], "date"]).days / st # first item
@@ -108,7 +117,7 @@ def velo_cmd(cmd):
         "top" - the best achievement
     '''
     if debug:
-        print "velo", cmd
+        prnt_log("velo %s" % cmd)
 
     if cmd == "":
         cmd = "stat" 
