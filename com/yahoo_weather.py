@@ -2,7 +2,7 @@
 """
   Weather report bot
 """
-import pywapi
+import urllib2, urllib, json
 import yaml
 import sys
 from time import asctime
@@ -23,25 +23,29 @@ def weather_report(parameter):
         last_file = False
         print "Warning: no last file..."
                 
-    Moscow = 'RSXX0063'
+    Moscow = '2122265'
+    baseurl = "https://query.yahooapis.com/v1/public/yql?"
+    yql_query = "select * from weather.forecast where woeid=" + Moscow
+    yql_url = baseurl + urllib.urlencode({'q':yql_query}) + "&format=json"
     try:
-      result = pywapi.get_weather_from_yahoo(Moscow, 'metric')   
-      if result['error']:
-          print result #{'error': 'Could not connect to Yahoo! Weather'}
-          sys.exit(0)
+      result = urllib2.urlopen(yql_url).read()
     except:
       print "Error: no connection..."
       sys.exit(0)
 
+    def far2cel(far):
+        return int( (int(far)-32)*5/9. )
+      
     # Data
-    date = result['forecasts'][0]['date'] # error
-    temp_h = int(result['forecasts'][0]['high'])
-    temp_l = int(result['forecasts'][0]['low'])
-    text = result['forecasts'][0]['text']
-    humidity = int(result["atmosphere"]["humidity"])
-    pressure = int(round(float(result["atmosphere"]["pressure"]) * 0.75 , 0))
-    chill = int(result['wind']['chill'])
-    speed = int(round(float(result['wind']['speed']) * 1000 / 3600., 0))
+    data = json.loads(result)
+    date = data["query"]["results"]["channel"]["item"]["forecast"][0]["date"]
+    temp_h = far2cel( data["query"]["results"]["channel"]["item"]["forecast"][0]["high"] )
+    temp_l = far2cel( data["query"]["results"]["channel"]["item"]["forecast"][0]["low"] )
+    text = data["query"]["results"]["channel"]["item"]["forecast"][0]["text"]
+    humidity =  int( data["query"]["results"]["channel"]["atmosphere"]["humidity"] )
+    pressure = int( round( float( data["query"]["results"]["channel"]["atmosphere"]["pressure"] ) * 0.75 , 0 ) )
+    chill = int( data["query"]["results"]["channel"]["wind"]["chill"] )
+    speed = int( round(float(data["query"]["results"]["channel"]["wind"]["speed"]) * 1000 / 3600., 0))
 
     # Check the date
     new = False
@@ -113,9 +117,8 @@ speed: %s
     
     # update last.yml
     if (new or not last_file):
-        f = file("./last.yml", "wb")
-        f.writelines(full_report)
-        f.close()
+        with open("./last.yml", "w") as f:
+            f.writelines(full_report)
         print "last updated"
 
     if (parameter == "diff"):
@@ -125,4 +128,4 @@ speed: %s
 
     return out
 
-#weather_report("full")
+#print weather_report("full")
