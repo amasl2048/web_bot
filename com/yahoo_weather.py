@@ -25,13 +25,16 @@ def weather_report(parameter):
                 
     Moscow = 'RSXX0063'
     try:
-      result = pywapi.get_weather_from_yahoo(Moscow, 'metric')
+      result = pywapi.get_weather_from_yahoo(Moscow, 'metric')   
+      if result['error']:
+          print result #{'error': 'Could not connect to Yahoo! Weather'}
+          sys.exit(0)
     except:
       print "Error: no connection..."
       sys.exit(0)
 
     # Data
-    date = result['forecasts'][0]['date']
+    date = result['forecasts'][0]['date'] # error
     temp_h = int(result['forecasts'][0]['high'])
     temp_l = int(result['forecasts'][0]['low'])
     text = result['forecasts'][0]['text']
