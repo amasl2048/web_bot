@@ -6,6 +6,7 @@ import urllib2, urllib, json
 import yaml
 import sys
 from time import asctime
+#import pprint
 
 def weather_report(parameter):
     '''
@@ -37,15 +38,16 @@ def weather_report(parameter):
         return int( (int(far)-32)*5/9. )
       
     # Data
-    data = json.loads(result)
-    date = data["query"]["results"]["channel"]["item"]["forecast"][0]["date"]
-    temp_h = far2cel( data["query"]["results"]["channel"]["item"]["forecast"][0]["high"] )
-    temp_l = far2cel( data["query"]["results"]["channel"]["item"]["forecast"][0]["low"] )
-    text = data["query"]["results"]["channel"]["item"]["forecast"][0]["text"]
-    humidity =  int( data["query"]["results"]["channel"]["atmosphere"]["humidity"] )
-    pressure = int( round( float( data["query"]["results"]["channel"]["atmosphere"]["pressure"] ) * 0.75 , 0 ) )
-    chill = int( data["query"]["results"]["channel"]["wind"]["chill"] )
-    speed = int( round(float(data["query"]["results"]["channel"]["wind"]["speed"]) * 1000 / 3600., 0))
+    data = json.loads(result)["query"]["results"]["channel"]
+    #pprint.pprint(data)
+    date = data["item"]["forecast"][0]["date"]
+    temp_h = far2cel( data["item"]["forecast"][0]["high"] )
+    temp_l = far2cel( data["item"]["forecast"][0]["low"] )
+    text = data["item"]["forecast"][0]["text"]
+    humidity =  int( data["atmosphere"]["humidity"] )
+    pressure = int( round( float( data["atmosphere"]["pressure"] ) * 0.75 , 0 ) )
+    chill = int( data["wind"]["chill"] )
+    speed = int( round(float(data["wind"]["speed"]) * 1000 / 3600., 0))
 
     # Check the date
     new = False
@@ -128,4 +130,4 @@ speed: %s
 
     return out
 
-#print weather_report("full")
+#weather_report("full")
