@@ -3,6 +3,7 @@ import requests
 import hashlib
 import yaml
 import os
+import re
 '''
 Checking does web content changed
 
@@ -21,11 +22,14 @@ def content_cmd():
 
     url = config["content"]["url"]
 
+    patt = re.compile(r"<body.*</body>", re.S)
+
     req = requests.get(url)
 
     if req.ok:
         m = hashlib.md5()
-        m.update(req.content)
+        co = patt.findall(req.content)[0]
+        m.update(co)
         h = m.hexdigest()
         #print h
         last = rdb.get("cont")
