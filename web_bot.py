@@ -36,6 +36,8 @@ elif (key == "nasdaq"):
     out = nasdaq.get_price(sys.argv[2], sys.argv[3])
 elif (key == "counter"):
     out = tlog.tcount("today")
+elif (key == "content"):
+    out = content.content_cmd()
 else:
     out = ""
     print "No data"
