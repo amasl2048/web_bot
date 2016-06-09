@@ -22,16 +22,23 @@ def content_cmd():
 
     url = config["content"]["url"]
 
-    patt = re.compile(r"<body.*</body>", re.S)
+    body_patt  = re.compile(r"<body.*</body>", re.S)
+    hdr_patt   = re.compile(r"<header.*</header>", re.S)
+    sesid = re.compile(';jsessionid=(.*?)\" >', re.S)
 
     req = requests.get(url)
 
     if req.ok:
         m = hashlib.md5()
-        co = patt.findall(req.content)[0]
-        m.update(co)
+        b1 = body_patt.findall(req.content)[0] # find body
+        hdr = hdr_patt.findall(b1)[0] # find header
+        b2 = b1.replace(hdr, "") # remove header
+        js = sesid.findall(b2)[1] # the second item is correctly match
+        body = b2.replace(js, "") # remove id
+        m.update(body)
         h = m.hexdigest()
-        #print h
+        with open("body.htm", "w") as f:
+            f.writelines(body)
         last = rdb.get("cont")
         if h == last:
             prnt_log("Content not changed.")
@@ -42,4 +49,4 @@ def content_cmd():
     else:
         prnt_log(req.status_code)
 
-#print content_cmd(url)
+#print content_cmd()
