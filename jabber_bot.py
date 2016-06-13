@@ -308,6 +308,22 @@ def run_jabber():
                 return "Error"
             return str(erlang_b.erlang(s))
 
+        @botcmd
+        def fspl( self, mess, args):
+            """
+            FSPL calculator in dB
+            fspl <Mhz> <meters>
+            """
+            if not self.check_cont(mess): return "Error"
+            if len(args) == 0:
+                return str(fspl.__doc__)
+            elif self.check_cmd(args):
+                s = str(args).strip()
+                #print s
+            else:
+                return "Error"
+            return str(fspl_calc.fspl(s))
+
     username = jabber_conf["username"]
     password = jabber_conf["password"]
     bot = SystemInfoJabberBot(username, password)
