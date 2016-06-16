@@ -299,4 +299,4 @@ def run():
 if len(sys.argv) > 1:
     run()
 else:
-    print("Run with option: start | stop");
+    print("Run with option: start | stop | restart | psw | status | daemon");

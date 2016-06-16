@@ -24,12 +24,16 @@ except:
     sys.exit(0)
 
 log_file = os.path.join(config["work_dir"], config["log_file"]) 
-sys.stdout = open(log_file, "a")
+#sys.stdout = open(log_file, "a")
+
+def prnt_log(msg):
+    with open(log_file, "a") as f:
+        f.write(datetime.datetime.now().isoformat(" ") + " " + msg + "\n")
 
 logging.basicConfig(filename=config["log"], level=logging.ERROR)
 
 def run_jabber():
-
+    prnt_log("### Jabber bot is running...")
     class SystemInfoJabberBot(JabberBot):
 
         def check_cont(self, mess):
@@ -44,7 +48,7 @@ def run_jabber():
             if (hsh == m.hexdigest()):
                 return True
             else:
-                print who
+                prnt_log(who)
                 #print m.hexdigest()
                 return False
 
@@ -87,14 +91,13 @@ def run_jabber():
         @botcmd
         def cmd( self, mess, args):
             """
-	    Control jabber service: cmd <>
-	    stop
-	    status (return web_server "Running" or "OK")
-        psw <password>
-	    """
+            Control jabber service: cmd <>
+            stop
+            status (return web_server "Running" or "OK")
+            """
             if not self.check_cont(mess): return "Error"
             if args.strip() == "stop":
-                print "Jabber bot is stoping..."
+                prnt_log("### Jabber bot is stoping...")
                 sys.exit(0)
             if args.strip() == "status":
                     data = urllib.urlencode({"status": "server"})
@@ -327,7 +330,6 @@ def run_jabber():
     username = jabber_conf["username"]
     password = jabber_conf["password"]
     bot = SystemInfoJabberBot(username, password)
-    print "Jabber bot is Running..."
     bot.serve_forever()
 
 def start():
@@ -345,7 +347,7 @@ def run():
         stop();
         start();
     elif sys.argv[1] == "daemon":
-         run_jabber();
+        run_jabber();
     else:
         print("Unknown: ", sys.argv[1])
 
@@ -354,5 +356,5 @@ def run():
 if len(sys.argv) > 1:
     run()
 else:
-    print("Run with option: start | stop");
+    print("Run with option: start | restart | daemon");
 

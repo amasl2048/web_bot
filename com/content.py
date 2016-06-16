@@ -4,6 +4,7 @@ import hashlib
 import yaml
 import os
 import re
+import datetime
 '''
 Checking does web content changed
 
@@ -16,7 +17,7 @@ def content_cmd():
 
     def prnt_log(msg):
         with open(log_file, "a") as f:
-            f.write(msg + "\n")
+            f.write(datetime.datetime.now().isoformat(" ") + " " + msg + "\n")
 
     rdb = redis.Redis(host="localhost", port=6379)
 
