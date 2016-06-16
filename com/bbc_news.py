@@ -4,6 +4,7 @@ import hashlib
 import urllib2
 import time
 import sys
+import redis
 '''
 RSS news fetcher
   - read remote .xml
@@ -16,29 +17,30 @@ def bbc_rss(parameter):
     '''
     parameter:
     "all" - all available news
-    "new" - only new ones from last chech
+    "new" - only new ones from last check
     '''
     try:
-        file = urllib2.urlopen('http://feeds.bbci.co.uk/news/rss.xml')
-        data = file.read()
-        file.close()
+        url = urllib2.urlopen('http://feeds.bbci.co.uk/news/rss.xml')
+        data = url.read()
+        url.close()
     except:
         print "Could not connect... "
         sys.exit(0)
-
-    def txt2set(file):
+    
+    rdb = redis.Redis(host="localhost", port=6379)
+    
+    def txt2set(fl):
         out = []
-	try:
-            for l in open(file, 'r'):
+        try:
+            for l in open(fl, 'r'):
                 out.append(l.strip())
-	except:
-	    open(file, 'w').close()
-	    print "Warning: empty file %s is created " % file
-	    print "Please add your keywords to my_words.txt in one column"
+        except:
+            open(fl, 'w').close()
+            print "Warning: empty file %s is created " % fl
+            print "Please add your keywords to my_words.txt in one column"
         return set(out)
 
-    hashes = txt2set("hashes.txt") # old news md5 hashes 
-    ofile = open("hashes.txt", 'w') # we will rewrite it
+    hashes = rdb.smembers("bbcnews")
     my_words = txt2set("my_words.txt") # list of keywords in one column
  
     report = ""
@@ -63,13 +65,11 @@ def bbc_rss(parameter):
                     if (not (h in hashes) ):
                         report += item_child.text + "\n\n"
                     full_report += item_child.text + "\n\n"
-                    ofile.writelines([h,"\n"])
-
-    ofile.close()
+                    rdb.sadd("bbcnews", h)
 
     if (report):
         print time.asctime()
-        print report.decode("windows-1252").encode("utf-8") # '\xa3' -> £
+        print unicode(report, "utf-8").encode("utf-8") # '\xa3' -> £
 
     if (parameter == "new"):
         out = report
@@ -78,5 +78,5 @@ def bbc_rss(parameter):
 
     return out.encode("utf-8")
 
-#bbc_rss("all")
+bbc_rss("all")
 
