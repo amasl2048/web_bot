@@ -12,12 +12,15 @@
   - name: sync py files
     synchronize: src=~/pylab/web_bot/ dest=~/ recursive=yes times=yes perms=yes checksum=yes set_remote_user=no rsync_opts=--include=com/,--include=*.py,--exclude=*
 
-  - name: start web/jabber services and wait 5 sec, fire and forget
-    shell: '$HOME/service_run.sh &'
+  - name: jabber service start
+    shell: '$HOME/jabber_bot.py start'
+
+  - name: web service fire, wait 5 sec and forget
+    shell: '$HOME/service_run.sh'
     async: 5
     poll: 0
 
-  - name: web_server psw 
+  - name: web_server psw
     shell: '$HOME/web_server.py psw {{secrete}}'
     no_log: True
 

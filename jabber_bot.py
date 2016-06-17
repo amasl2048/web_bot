@@ -241,7 +241,7 @@ def run_jabber():
         def bbc( self, mess, args):
             """Displays news from BBC rss feed"""
             if not self.check_cont(mess): return "Error"
-            return str(bbc_news.bbc_rss("all"))
+            return bbc_news.bbc_rss("all")
 
         @botcmd
         def rate( self, mess, args):

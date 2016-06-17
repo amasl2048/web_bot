@@ -30,17 +30,18 @@ def bbc_rss(parameter):
     rdb = redis.Redis(host="localhost", port=6379)
     
     def txt2set(fl):
-        out = []
+        words = []
         try:
             for l in open(fl, 'r'):
-                out.append(l.strip())
+                words.append(l.strip())
         except:
-            open(fl, 'w').close()
-            print "Warning: empty file %s is created " % fl
+            #open(fl, 'w').close()
+            #print "Warning: empty file %s is created " % fl
             print "Please add your keywords to my_words.txt in one column"
-        return set(out)
+        return set(words)
 
     hashes = rdb.smembers("bbcnews")
+    rdb.delete("bbcnews")
     my_words = txt2set("my_words.txt") # list of keywords in one column
  
     report = ""
@@ -53,11 +54,11 @@ def bbc_rss(parameter):
         for item_child in item_children:
             if (item_child.tag == "description"):
                 if item_child.text:
-                    s = item_child.text.replace(",", "").replace(".", "").replace(":", "").replace("'s", "").replace("'", "").replace("-", " ").split()
-                    s1 = set(s)
+                    descr = item_child.text.replace(",", "").replace(".", "").replace(":", "").replace("'s", "").replace("'", "").replace("-", " ").split()
+                    set_descr = set(descr)
                 else:
                     return
-                if (my_words & s1):
+                if (my_words & set_descr):
                     #print "%s - %s" % (item_child.tag, item_child.text)
                     m = hashlib.md5()
                     m.update(item_child.text.encode("utf-8"))
@@ -66,11 +67,11 @@ def bbc_rss(parameter):
                         report += item_child.text + "\n\n"
                     full_report += item_child.text + "\n\n"
                     rdb.sadd("bbcnews", h)
-
+    '''
     if (report):
         print time.asctime()
         print unicode(report, "utf-8").encode("utf-8") # '\xa3' -> £
-
+    '''
     if (parameter == "new"):
         out = report
     else:
@@ -78,5 +79,5 @@ def bbc_rss(parameter):
 
     return out.encode("utf-8")
 
-bbc_rss("all")
+#print bbc_rss("all")
 
