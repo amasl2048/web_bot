@@ -86,6 +86,34 @@ def velo_top(csvfile):
     report += "\n" + str(df_all.sort(["speed"], ascending=False)[:3][["date", "time", "km", "speed"]])
     
     return report
+
+def velo_last(csvfile):
+    df_all = read_csv(csvfile, sep='\t', header=0, index_col=0, parse_dates=[1])
+    id = df_all.sort(["date"]).index.tolist()[-1]
+    report = str(df_all.loc[id])
+
+    # longest time
+    df_all["timedelta"] = df_all["time"].map(str2time)
+    ltime = df_all.sort(["timedelta"], ascending=False)
+    for i, elem in enumerate(ltime.index.tolist()):
+        if elem == id:
+            report += "\nRate:\n %s for time" % str(i+1)
+    
+    # distance
+    distance = df_all.sort(["km"], ascending=False)
+    for i, elem in enumerate(distance.index.tolist()):
+        if elem == id:
+            report += "\n %s for distance" % str(i+1)
+    
+    # speed
+    df_all["hours"] = df_all.timedelta / timedelta64(1, "h")
+    df_all["speed"] = df_all.km / df_all.hours 
+    speed = df_all.sort(["speed"], ascending=False)
+    for i, elem in enumerate(speed.index.tolist()):
+        if elem == id:
+            report += "\n %s for speed %s" % (str(i+1), str(round(df_all["speed"].loc[id],1)))
+
+    return report
     
 def velo_add(csvfile, t, km):
     ptime = re.compile("^\d{1,2}:\d{2}$")
@@ -104,7 +132,7 @@ def velo_add(csvfile, t, km):
     with open(csvfile, "a") as f:
         f.write(row)
 
-    return velo_stat(csvfile, t_year)
+    return velo_last(csvfile)
 
 def velo_cmd(cmd):
     '''
@@ -115,6 +143,7 @@ def velo_cmd(cmd):
         "stat [year]" - return velo statistics for the year
         "work" - add default time/distance to work
         "top" - the best achievement
+        "last" - last item
     '''
     if debug:
         prnt_log("velo %s" % cmd)
@@ -130,6 +159,8 @@ def velo_cmd(cmd):
         return velo_cmd.__doc__
     elif c[0] == "top":
         return velo_top(csvfile)
+    elif c[0] == "last":
+        return velo_last(csvfile)
     elif c[0] == "work":
         return velo_add(csvfile, work[0], work[1])
     elif c[0] == "add":
@@ -137,4 +168,4 @@ def velo_cmd(cmd):
             return "Error"
         return velo_add(csvfile, c[1], c[2])
 
-#print velo_cmd("top")
+print velo_cmd("last")
