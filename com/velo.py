@@ -168,4 +168,4 @@ def velo_cmd(cmd):
             return "Error"
         return velo_add(csvfile, c[1], c[2])
 
-print velo_cmd("last")
+#print velo_cmd("last")
