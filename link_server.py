@@ -27,22 +27,24 @@ class Link:
 
     def link_stat(self, data):
         '''
-        Return total number of records and tags list
+        Return total number of records and sorted unique tags list
         '''
         links = yaml.load(data)
         tags = set()
-        tag_list = u""
         for key, val in links.iteritems():
             if isinstance(val["tag"], str):
                 tags.add(val["tag"])
             else:
                 for each in val["tag"]:
                     tags.add(each)
+
+        tag_list = []
         for item in tags:
             if isinstance(item, str):
                 item = unicode(item, "utf-8")
-            tag_list = tag_list + " " + item
-        return u"%s records with tags: %s" % (len(links.keys()), tag_list)
+            tag_list.append(item)
+        tag_list.sort()
+        return u"%s records with tags: %s" % (len(links.keys()), " ".join(tag_list))
 
     def link_uniq(self, data, link_id):
         '''
