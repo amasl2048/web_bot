@@ -250,6 +250,12 @@ def run_jabber():
             return str(micex.ex_rate("all"))
 
         @botcmd
+        def coins( self, mess, args):
+            """Displays tickers rate"""
+            if not self.check_cont(mess): return "Error"
+            return str(ticker.ticker_cmd("all"))
+
+        @botcmd
         def rbc( self, mess, args):
             """Displays CBRF currency ex-rate from RBC"""
             if not self.check_cont(mess): return "Error"

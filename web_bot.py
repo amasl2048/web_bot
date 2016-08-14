@@ -17,6 +17,7 @@ except:
         bbc - news from BBC rss feed by keywords from my_words.txt
         rate - last ex-rates changes from MICEX
         nasdaq [symbol] [percent_limit] - get share price from NASDAQ
+        ticker
 '''
     sys.exit(0)
 
@@ -38,6 +39,8 @@ elif (key == "counter"):
     out = tlog.tcount("today")
 elif (key == "content"):
     out = content.content_cmd()
+elif (key == "ticker"):
+    out = ticker.ticker_cmd("change")
 else:
     out = ""
     print "No data"

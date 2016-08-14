@@ -12,5 +12,6 @@ __all__ = ["yahoo_weather",
             "nasdaq",
             "tlog",
             "content",
-            "fspl_calc"]
+            "fspl_calc",
+            "ticker"]
 
