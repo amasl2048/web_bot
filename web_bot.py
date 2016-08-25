@@ -3,7 +3,8 @@
 
 from com import *
 import jabber_ru
-
+import re
+import time
 import sys
 
 try:
@@ -17,7 +18,8 @@ except:
         bbc - news from BBC rss feed by keywords from my_words.txt
         rate - last ex-rates changes from MICEX
         nasdaq [symbol] [percent_limit] - get share price from NASDAQ
-        ticker
+        ticker - change
+        velo - stat
 '''
     sys.exit(0)
 
@@ -41,10 +43,23 @@ elif (key == "content"):
     out = content.content_cmd()
 elif (key == "ticker"):
     out = ticker.ticker_cmd("change")
+elif (key == "velo"):
+    report = velo.velo_cmd("stat")
+    pattern = re.compile("Last:.(\d+).days")
+    last = int(pattern.findall(report)[0])
+    mon = time.localtime().tm_mon
+    if (mon > 3) and (mon < 11):
+        velotime = True
+    else:
+        velotime = False
+    if (last > 3) and velotime:
+        out = report
+    else:
+        out = ""
 else:
     out = ""
     print "No data"
 
 if out:
-    jabber_ru.send_xmpp(out)
+    #jabber_ru.send_xmpp(out)
     print out

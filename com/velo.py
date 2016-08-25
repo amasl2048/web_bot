@@ -37,14 +37,21 @@ def str2time(Series):
     h,m = patt.search(Series).groups()
     return datetime.timedelta(hours=int(h), minutes=int(m))
 
-#def time2hours(Series):
-#    return Series
+def td2min(tdelta):
+    '''Convert timedelta to hh mm
+    for python 2.7.12
+    '''
+    tts = tdelta.total_seconds()
+    hours = int(tts/60./60.)
+    minutes = int((tts - hours * 3600)/60.)
+    return "%sh %sm" % (hours, minutes)
 
 def dec2min(hours):
+    ''' For python 2.7.6 '''
     h = int(hours)
     m = hours - h
     return "%sh %sm" % (h, int(60 * m) )
-    
+
 def velo_stat(csvfile, year):
     df_all = read_csv(csvfile, sep='\t', header=0, index_col=0, parse_dates=[1])
     #st_all = df_all["date"].size
@@ -55,14 +62,20 @@ def velo_stat(csvfile, year):
     if st == 0:
         return "Null"
     df["timedelta"] = df["time"].map(str2time)
-    ttime = df["timedelta"].sum()/1000/1000/1000/60/60.
+    #ttime = df["timedelta"].sum()
+    ttime = df["timedelta"].sum()/1000/1000/1000/60/60. # hack
+    '''
+    In old python 2.7.6 the dtype of 'timedelta' is numpy.int64 instead of timedelta.
+    In python 2.7.12 timedelta.sum() returns timedelta
+    '''
 
     out = """Totaly:\t%s km %s times
-Time:\t%s hours
+Time:\t%s
 Avg:\t%s km per day
 Last:\t%s days
 Velo:\teach %s days
 """  % (df["km"].sum(), st,
+    #td2min(ttime),
     dec2min(ttime),
     round(df["km"].mean(), 1),
     (today - df.loc[df.index.tolist()[-1], "date"]).days, # last item
