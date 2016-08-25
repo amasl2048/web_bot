@@ -61,5 +61,5 @@ else:
     print "No data"
 
 if out:
-    #jabber_ru.send_xmpp(out)
+    jabber_ru.send_xmpp(out)
     print out
