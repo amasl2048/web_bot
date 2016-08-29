@@ -5,6 +5,8 @@ import time
 import re
 import subprocess
 import yaml
+
+import common
 '''
 Traffic stats in Mbytes
 per week/month
@@ -16,7 +18,7 @@ def traffic_report(param):
       today  - only traff data from last update
       update - rewrite traff yml file
     '''
-    interface = ["eth0"]
+    interface = common.config["traff"]["iface"]
 
     rx = re.compile(r"RX bytes:([0-9]+) \(", re.S)
     tx = re.compile(r"TX bytes:([0-9]+) \(", re.S)
@@ -31,26 +33,26 @@ def traffic_report(param):
     tm: %s
     '''
 
-    traff = "traf_report.yml"
+    traf_dat = common.config["traff"]["dat_file"]
     tm = time.strftime("%d.%m.%Y %H:%M:%S", time.localtime())
     week = time.strftime("%w")
     day  = time.strftime("%d")
     try:
-        traf_stat = yaml.load(open(traff))
+        traf_stat = yaml.load(open(traf_dat))
     except:
         stat = template % (interface[0], 0, 0,
                            0, 0, 0, 0,
                            tm)
         #print report
-        dat = open(traff, "w")
+        dat = open(traf_dat, "w")
         dat.writelines(stat)
         dat.close()
-        traf_stat = yaml.load(open(traff))
+        traf_stat = yaml.load(open(traf_dat))
 
     last_receive = traf_stat[interface[0]]["rx"]
     last_send   = traf_stat[interface[0]]["tx"]
 
-    print "\nStarting... \n--- ", time.strftime("%A, %d. %B %Y %H:%M")
+    common.prnt_log("Starting...")#, time.strftime("%A, %d. %B %Y %H:%M")
 
     output = subprocess.Popen(["/sbin/ifconfig", interface[0]], shell=True, stdout=subprocess.PIPE).communicate()[0]
     uptime = subprocess.Popen(["/usr/bin/uptime", "-p"],        shell=True, stdout=subprocess.PIPE).communicate()[0]
@@ -88,7 +90,8 @@ uptime: %s''' % (interface[0],
                 mb(rx_month), mb(tx_month),
                 mb(receive),  mb(send),
                 uptime)
-    print out
+    
+    common.prnt_log(out)
     # reset counters
     if week == "0":
         rx_week = 0
@@ -103,13 +106,14 @@ uptime: %s''' % (interface[0],
                        tm)
 
     if (param == "update"):
-      dat = open(traff, "w")
+      dat = open(traf_dat, "w")
       dat.writelines(stat)
       dat.close()
     elif (param == "today"):
         return out
 
-    if (mb(rx_diff) > 200) or (mb(tx_diff) > 200): # not report less 200Mb
+    limit = int(common.config["traff"]["limit"])
+    if (mb(rx_diff) > limit) or (mb(tx_diff) > limit): # not report less 200Mb
         return out
 
     return ""

@@ -1,5 +1,7 @@
 import yaml
 import os, time
+
+import common
 '''
 Check files changes if not zero size
 '''
@@ -7,14 +9,7 @@ Check files changes if not zero size
 def files_cmd():
 
     # read config
-    config = yaml.load(open("/etc/bot.config"))
-    log_file = os.path.join(config["work_dir"], config["log_file"])
-
-    files_list = config["files"]["list"]
-
-    def prnt_log(msg):
-        with open(log_file, "a") as f:
-            f.write("[%s] %s\n" % (time.strftime("%c"), msg))
+    files_list = common.config["files"]["list"]
 
     def zero_file(fl):
         sz = os.path.getsize(fl)
@@ -40,11 +35,11 @@ def files_cmd():
                        time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(st["time"])),
                        st["size"])
                 report += out
-                prnt_log(out)
+                common.prnt_log(out)
             else:
-                prnt_log("%s is empty" % afile)
+                common.prnt_log("%s is empty" % afile)
         else:
-            prnt_log("%s not exists" % afile)
+            common.prnt_log("%s not exists" % afile)
     return report
 
 #print files_cmd()

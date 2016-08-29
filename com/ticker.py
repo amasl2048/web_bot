@@ -1,11 +1,11 @@
 import requests
-import yaml
+
+import common
 
 def ticker_cmd(key):
     try:
-        config = yaml.load(open("/etc/bot.config"))
-        api = config["ticker"]["api"] 
-        tickers = config["ticker"]["tickers"]
+        api = common.config["ticker"]["api"] 
+        tickers = common.config["ticker"]["tickers"]
     except:
         return "Bad config file"
         

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-__all__ = ["yahoo_weather",
+__all__ = ["common",
+            "yahoo_weather",
             "rbc_currency",
             "bbc_news",
             "micex",

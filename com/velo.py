@@ -4,6 +4,8 @@ import time, datetime
 import re
 import shutil
 import yaml, os
+
+import common
 '''
 Module
 -----
@@ -15,22 +17,15 @@ velo_cmd("velo stat")
 '''
 
 # read config
-config = yaml.load(open("/etc/bot.config"))
-log_file = os.path.join(config["work_dir"], config["log_file"])
-#sys.stdout = open(log_file, "a")
 
-debug   = config["velo"]["debug"]
-csvfile = config["velo"]["csvfile"]
-work    = config["velo"]["work"]
+debug   = common.config["velo"]["debug"]
+csvfile = common.config["velo"]["csvfile"]
+work    = common.config["velo"]["work"]
 
 t_year = int(time.strftime("%Y")) # this year
 
-def prnt_log(msg):
-    with open(log_file, "a") as f:
-        f.write(msg + "\n")
-
 if debug:
-    prnt_log("velo work: %s" % work)
+    common.prnt_log("velo work: %s" % work)
 
 def str2time(Series):
     patt = re.compile("(\d+):(\d+)")
@@ -159,7 +154,7 @@ def velo_cmd(cmd):
         "last" - last item
     '''
     if debug:
-        prnt_log("velo %s" % cmd)
+        common.prnt_log("velo %s" % cmd)
 
     if cmd == "":
         cmd = "stat" 
