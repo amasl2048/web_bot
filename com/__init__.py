@@ -13,5 +13,6 @@ __all__ = ["yahoo_weather",
             "tlog",
             "content",
             "fspl_calc",
-            "ticker"]
+            "ticker",
+            "files"]
 
