@@ -1,6 +1,5 @@
 import yaml
 import os, time
-import redis
 '''
 Check files changes if not zero size
 '''
@@ -35,11 +34,15 @@ def files_cmd():
         if os.path.exists(afile):
             if not zero_file(afile):
                 st = stat_file(afile)
-                report += '''%s is changed
+                out = '''%s is changed
   time: %s
   size: %s bytes''' % (os.path.basename(afile),
-                 time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(st["time"])),
-                 st["size"])
+                       time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(st["time"])),
+                       st["size"])
+                report += out
+                prnt_log(out)
+            else:
+                prnt_log("%s is empty" % afile)
         else:
             prnt_log("%s not exists" % afile)
     return report

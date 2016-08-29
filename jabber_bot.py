@@ -256,6 +256,17 @@ def run_jabber():
             return str(ticker.ticker_cmd("all"))
 
         @botcmd
+        def files( self, mess, args):
+            """Check files change"""
+            if not self.check_cont(mess):
+                return "Error"
+            out = str(files.files_cmd())
+            if out:
+                return str(files.files_cmd())
+            else:
+                return "Empty"
+
+        @botcmd
         def rbc( self, mess, args):
             """Displays CBRF currency ex-rate from RBC"""
             if not self.check_cont(mess): return "Error"

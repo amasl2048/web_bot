@@ -20,6 +20,7 @@ except:
         nasdaq [symbol] [percent_limit] - get share price from NASDAQ
         ticker - change
         velo - stat
+        files - files change check
 '''
     sys.exit(0)
 
@@ -43,6 +44,8 @@ elif (key == "content"):
     out = content.content_cmd()
 elif (key == "ticker"):
     out = ticker.ticker_cmd("change")
+elif (key == "files"):
+    out = files.files_cmd()
 elif (key == "velo"):
     report = velo.velo_cmd("stat")
     pattern = re.compile("Last:.(\d+).days")
