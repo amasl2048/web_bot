@@ -5,6 +5,8 @@ from numpy import genfromtxt, mean, std, corrcoef
 import sys
 from datetime import date
 import time
+
+import common
 '''
 Get currency rates from rbc.ru
   - calculate mean, stdev, correlation for last week, month, year
@@ -65,7 +67,7 @@ def rbc_get(key):
     try:
         con = httplib.HTTPConnection(srv)
     except:
-        print "Error: no connection!"
+        common.prnt_log("Error: no connection!")
         sys.exit(0)
     
     #for s in tickers.keys():
@@ -132,9 +134,8 @@ cross {16}: {17:.2f} {18:.2f}%
 corr {19}: {20:.2f}
 '''.format(*arr2)
 
-    if (report):
-        print time.asctime()
-	print report
+    if report:
+        common.prnt_log(report)
 
     return report
 

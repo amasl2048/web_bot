@@ -5,6 +5,8 @@ from datetime import date
 from numpy import genfromtxt
 from StringIO import StringIO
 from time import asctime
+
+import common
 '''
 Get currency rates from micex.ru
   - send results over xmpp
@@ -69,8 +71,7 @@ def ex_rate(par):
         if (not send): report = ""
 
     if report:
-	print asctime()
-	print report   
+        common.prnt_log(report)
    
     return report
 
