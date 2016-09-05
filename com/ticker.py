@@ -20,8 +20,8 @@ def ticker_cmd(key):
 
             if key == 'change':
 
-                if abs(r.json()[0]['percent_change_24h']) >= common.config['ticker']['lim_24h'] or \
-                    abs(r.json()[0]['percent_change_7d']) >= common.config['ticker']['lim_7d']:
+                if abs(float(r.json()[0]['percent_change_24h'])) >= common.config['ticker']['lim_24h'] or \
+                    abs(float(r.json()[0]['percent_change_7d'])) >= common.config['ticker']['lim_7d']:
                     report += '''%s
     %s usd
     %s%% 24h
