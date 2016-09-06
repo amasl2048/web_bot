@@ -5,6 +5,8 @@ import urllib2
 import time
 import sys
 import redis
+
+import common
 '''
 RSS news fetcher
   - read remote .xml
@@ -20,11 +22,11 @@ def bbc_rss(parameter):
     "new" - only new ones from last check
     '''
     try:
-        url = urllib2.urlopen('http://feeds.bbci.co.uk/news/rss.xml')
+        url = urllib2.urlopen(common.config["bbc"]["rss"])
         data = url.read()
         url.close()
     except:
-        print "Could not connect... "
+        common.prnt_log("Could not connect... ")
         sys.exit(0)
     
     rdb = redis.Redis(host="localhost", port=6379)
@@ -37,12 +39,12 @@ def bbc_rss(parameter):
         except:
             #open(fl, 'w').close()
             #print "Warning: empty file %s is created " % fl
-            print "Please add your keywords to my_words.txt in one column"
+            common.prnt_log("Please add your keywords to %s in one column" % fl)
         return set(words)
 
     hashes = rdb.smembers("bbcnews")
     rdb.delete("bbcnews")
-    my_words = txt2set("my_words.txt") # list of keywords in one column
+    my_words = txt2set(common.config["bbc"]["my_words"]) # list of keywords in one column
  
     report = ""
     full_report = time.asctime() + "\n\n"
@@ -59,7 +61,7 @@ def bbc_rss(parameter):
                 else:
                     return
                 if (my_words & set_descr):
-                    #print "%s - %s" % (item_child.tag, item_child.text)
+                    common.prnt_log(item_child.text)
                     m = hashlib.md5()
                     m.update(item_child.text.encode("utf-8"))
                     h = m.hexdigest()
@@ -79,5 +81,5 @@ def bbc_rss(parameter):
 
     return out.encode("utf-8")
 
-#print bbc_rss("all")
+#print bbc_rss("new")
 
