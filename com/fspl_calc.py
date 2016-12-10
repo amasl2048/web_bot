@@ -9,7 +9,7 @@ def fspl(cmd):
     #f = 2400 # MHz
     #d = 10 # m
     if len(c) != 2:
-        return "Error: should be 2 parameters"
+        return fspl.__doc__
     try:
         f = float(c[0])
         d = float(c[1])

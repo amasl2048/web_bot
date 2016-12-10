@@ -329,6 +329,19 @@ def run_jabber():
             return str(erlang_b.erlang(s))
 
         @botcmd
+        def packet( self, mess, args):
+            """Calc. packet transmission time"""
+            if not self.check_cont(mess): return "Error"
+            if len(args) == 0:
+                return str(packet.pkts_cmd(""))
+            elif self.check_link(args):
+                s = str(args).strip()
+                #print s
+            else:
+                return "Error"
+            return str(packet.pkts_cmd(s))
+
+        @botcmd
         def fspl( self, mess, args):
             """
             FSPL calculator in dB

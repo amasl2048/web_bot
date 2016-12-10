@@ -15,5 +15,6 @@ __all__ = ["common",
             "content",
             "fspl_calc",
             "ticker",
-            "files"]
+            "files",
+            "packet"]
 
