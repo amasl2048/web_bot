@@ -349,7 +349,7 @@ def run_jabber():
             """
             if not self.check_cont(mess): return "Error"
             if len(args) == 0:
-                return str(fspl.__doc__)
+                return str( fspl_calc.fspl("") )
             elif self.check_cmd(args):
                 s = str(args).strip()
                 #print s
