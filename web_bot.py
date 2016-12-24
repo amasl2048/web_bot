@@ -2,13 +2,13 @@
 # -*- coding: utf-8 -*-
 
 from com import *
-import jabber_ru
 import re
 import time
 import sys
+import subprocess
 
 try:
-	key = sys.argv[1]
+    key = sys.argv[1]
 except:
     print '''Usage: web_bot.py [command]
     command:
@@ -24,7 +24,9 @@ except:
 '''
     sys.exit(0)
 
-if (key == "weather"):
+if (key == "test"):
+    out = "test"
+elif (key == "weather"):
     out = yahoo_weather.weather_report("diff")
 elif (key == "rbc_m"):
     out = rbc_currency.rbc_get("m")
@@ -64,5 +66,10 @@ else:
     print "No data"
 
 if out:
-    jabber_ru.send_xmpp(out)
-    print out
+    p = subprocess.Popen(['./xsend.py', out],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE)
+    output, err = p.communicate()
+    print output, err
+
+print out

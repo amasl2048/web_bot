@@ -21,12 +21,13 @@ def bbc_rss(parameter):
     "all" - all available news
     "new" - only new ones from last check
     '''
+    bbc_site = common.config["bbc"]["rss"]
     try:
-        url = urllib2.urlopen(common.config["bbc"]["rss"])
+        url = urllib2.urlopen(bbc_site)
         data = url.read()
         url.close()
     except:
-        common.prnt_log("Could not connect... ")
+        common.prnt_log("Could not connect... %s" % (bbc_site))
         sys.exit(0)
     
     rdb = redis.Redis(host="localhost", port=6379)
