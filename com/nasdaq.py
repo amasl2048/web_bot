@@ -12,7 +12,7 @@ def get_price(symbol, limit):
     symbol = str(symbol)
     limit  = float(limit)
 
-    agent = "Mozilla/5.0; Windows NT 6.1; rv:34.0; Gecko/20100101 Firefox/34.0" 
+    agent = "Mozilla/5.0; Windows NT 6.1; rv:50.0; Gecko/20100101 Firefox/50.0" 
     headers = {"User-Agent": agent,
                 "Accept": "text/html",
                 "Accept-Language": "en, en-US",
@@ -21,16 +21,22 @@ def get_price(symbol, limit):
 
     con = httplib.HTTPConnection("www.nasdaq.com")
     con.request("GET", "/symbol/" + symbol, headers=headers)
-    result = con.getresponse()
+    try:
+        result = con.getresponse()
+    except:
+        print "No response"
     out = result.read()
     con.close()
+
+    #with open("m.html", 'w') as f:
+    #    f.write(out)
 
     def get_data(out):
         plast = re.compile('<div id="qwidget_lastsale" class="qwidget-dollar">(.*?)</div>')
         pnet  = re.compile('<div id="qwidget_netchange" class="qwidget-cents qwidget-\w+">(.*?)</div>')
         parr  = re.compile('<div id="qwidget-arrow"><div class="marginLR10px arrow-(.*?)"></div></div>')
         pperc = re.compile('<div id="qwidget_percent" class="qwidget-percent qwidget-\w+" style="white-space:nowrap">(.*?)%</div>')
-        ptime = re.compile('<span id="qwidget_markettime">(.*?)&nbsp;</span>')
+        ptime = re.compile('<span id="qwidget_markettime">(.*?)</span>')
 
         return plast.findall(out)[0],\
                pnet.findall(out)[0],\
