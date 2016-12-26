@@ -13,7 +13,8 @@ def tcount(arg):
     config = yaml.load(open("/etc/bot.config"))
     csvfile = config["tlog"]["log"]
 
-    df = read_csv(csvfile, sep=' ', header=None, index_col=0, parse_dates=[0])
+    df = read_csv(csvfile, sep=' ', header=None, index_col=0, parse_dates=[0],
+                  error_bad_lines=False)
     today = time.strftime("%Y-%m-%d")
     ##today = "2016-02-07"
     td = df.loc[today]
