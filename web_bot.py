@@ -51,7 +51,11 @@ elif (key == "files"):
 elif (key == "velo"):
     report = velo.velo_cmd("stat")
     pattern = re.compile("Last:.(\d+).days")
-    last = int(pattern.findall(report)[0])
+    try: 
+        last = int(pattern.findall(report)[0])
+    except:
+        out = ""
+        break
     mon = time.localtime().tm_mon
     if (mon > 3) and (mon < 11):
         velotime = True
