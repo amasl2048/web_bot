@@ -54,8 +54,7 @@ elif (key == "velo"):
     try: 
         last = int(pattern.findall(report)[0])
     except:
-        out = ""
-        break
+        last = 0
     mon = time.localtime().tm_mon
     if (mon > 3) and (mon < 11):
         velotime = True

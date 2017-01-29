@@ -26,6 +26,7 @@ debug = common.config["debug"]
 if debug:
     from twisted.python import log
     log.startLogging(open(log_file, "a"))
+    common.prnt_log(sys.argv)
 
 host =       common.config["static_url"]["host"].strip()
 local_path = common.config["static_url"]["local"].strip() # default values
@@ -33,7 +34,7 @@ days =       common.config["static_url"]["days"]
 
 url = base64.b32encode(str(os.urandom(10))).strip()
 
-if len(sys.argv) == 4: # becaurse "&" - the 4th argv
+if len(sys.argv) == 3: # 
     if not sys.argv[1].isalnum(): # "/" and ".." in path is not permitted!
         common.prnt_log("Error %s" % sys.argv[1])
         sys.exit(0)
