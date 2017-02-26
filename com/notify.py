@@ -8,14 +8,14 @@ import datetime
 
 import common
 
-def notify_me(dt, content):
+def notify_once(dt, content):
     '''
     Store event with date and content
         dt: <YYYY-MM-DD> 
         content: <text>
     '''
     
-    jdata = {"type":    "ones",
+    jdata = {"type":    "once",
              "date":    dt,
              "content": content}
 
@@ -58,7 +58,45 @@ def get_event(td):
         
     return when.isoformat(), report
     
-#notify_me("2017-02-27", "test test")
-d,r = get_event(2)
-print d, r
+#notify_once("2017-02-27", "test test")
+#d,r = get_event(2)
+#print d, r
+
+def notify_cmd(cmd):
+    '''
+    notify <cmd> [options]
+        cmd:
+           "once" <date> <text> - one event at the date
+              date: "YYYY-MM-DD"
+              text: any content
+           "weekly":  "Www" - weekday Mon, Tue, ...
+           "monthly": "DD"  - day
+           "yearly":  "MM-DD" - date
+           "each":    "d" - repeat after every "d" day 
+
+    events <cmd>
+       cmd:
+           0 - display today events
+           1 - tomorrow events
+    '''
+    #common.prnt_log("notify_cmd: %s" % cmd)
+    
+    if cmd == "":
+        cmd = "0"
+    c = cmd.split()
+
+    if c[0] == "once":
+        try:
+            dtime = datetime.datetime.strptime(c[1], "%Y-%m-%d")
+        except:
+            return "Date format: YYYY-MM-DD"
+        return "%s\n%s" % notify_once(c[1], c[2])
+
+    elif c[0].isdigit():
+        return "%s %s" % get_event( int(c[0]) )
+    
+    else:
+        return "Not implemented"
+
+    return "Empty"
     

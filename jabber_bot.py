@@ -296,6 +296,32 @@ def run_jabber():
             return str(velo.velo_cmd(s))
 
         @botcmd
+        def notify( self, mess, args):
+            """Add notify event"""
+            if not self.check_cont(mess): return "Error mess"
+            if len(args) == 0:
+                return str(notify.notify_cmd("0"))
+            elif self.check_link(args):
+                s = str(args).strip()
+                #print s
+            else:
+                return "Error"
+            return str(notify.notify_cmd(s))
+
+        @botcmd
+        def events( self, mess, args):
+            """Display planned events"""
+            if not self.check_cont(mess): return "Error mess"
+            if len(args) == 0:
+                return str(notify.notify_cmd("0"))
+            elif self.check_link(args):
+                s = str(args).strip()
+                #print s
+            else:
+                return "Error"
+            return str(notify.notify_cmd(s))
+
+        @botcmd
         def link( self, mess, args):
             """Manage links"""
             if not self.check_cont(mess): return "Error"

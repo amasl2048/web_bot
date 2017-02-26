@@ -43,6 +43,9 @@ def tcount(arg):
                   parse_dates=[0],
                   error_bad_lines=False)
     #import ipdb; ipdb.set_trace()
+
+
+    
     #today = "2017-02-24"
     try:
         td = df.loc[today]
@@ -62,7 +65,7 @@ def tcount(arg):
     err = td[td[9] > 304][8].shape[0] # error http code
 
     bots = 'google-bot: %s, google-img: %s, yandex-bot: %s, yandex-img: %s' % (gb, gi, ya, yi)
-    views = 'views: %s, errors: %s' % (hits - gb - gi - ya - yi, err)
+    views = 'errors: %s, views: %s' % (err, hits - gb - gi - ya - yi - err)
     report = "%s\n %s\n %s" % (txt, bots, views)
 
     if arg == "today":
