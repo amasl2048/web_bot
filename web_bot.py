@@ -25,6 +25,8 @@ except:
 '''
     sys.exit(0)
 
+out = ""
+
 if (key == "test"):
     out = "test"
 elif (key == "weather"):
@@ -59,7 +61,7 @@ elif (key == "files"):
 elif (key == "velo"):
     report = velo.velo_cmd("stat")
     pattern = re.compile("Last:.(\d+).days")
-    try: 
+    try:
         last = int(pattern.findall(report)[0])
     except:
         last = 0
@@ -70,8 +72,6 @@ elif (key == "velo"):
         velotime = False
     if (last > 3) and velotime:
         out = report
-    else:
-        out = ""
 
 elif (key == "events_today"):
     when, report = notify.get_event(0)
@@ -89,10 +89,6 @@ elif (key == "events_week"):
     when, report = notify.get_event(7)
     if report:
         out = "%s %s" % (when, report)
-    
-else:
-    out = ""
-    print "No data"
 
 if out:
     p = subprocess.Popen(['./xsend.py', out],
