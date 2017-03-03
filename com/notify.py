@@ -56,11 +56,17 @@ def get_event(td):
 
     when = today + datetime.timedelta(days=td)
         
-    return when.isoformat(), report
+    return when.strftime("%a, %d %b:"), report      #TODO: utf8 report
+
+
+def event_list(day1, day2):
+
+    report = ""
+    for i in range(day1, day2):
+        report += "%s %s\n" % get_event(i)
     
-#notify_once("2017-02-27", "test test")
-#d,r = get_event(2)
-#print d, r
+    return report
+
 
 def notify_cmd(cmd):
     '''
@@ -69,21 +75,30 @@ def notify_cmd(cmd):
            "once" <date> <text> - one event at the date
               date: "YYYY-MM-DD"
               text: any content
-           "weekly":  "Www" - weekday Mon, Tue, ...
-           "monthly": "DD"  - day
-           "yearly":  "MM-DD" - date
-           "each":    "d" - repeat after every "d" day 
+           "weekly":  "Www" - weekday Mon, Tue, ...     #TODO
+           "monthly": "DD"  - day                       #TODO
+           "yearly":  "MM-DD" - date                    #TODO
+           "each":    "d" - repeat after every "d" day  #TODO
 
     events <cmd>
        cmd:
-           0 - display today events
-           1 - tomorrow events
+           0        - display today events
+           1        - tomorrow events
+           week     - list from 0 to 6 days
+           nextweek - list from 7 to 13 days
+           month    - list from 0 to 31 days
+           
+           del      #TODO
+
     '''
     #common.prnt_log("notify_cmd: %s" % cmd)
     
     if cmd == "":
         cmd = "0"
     c = cmd.split()
+
+    if c[0] == "help":
+        return notify_cmd.__doc__
 
     if c[0] == "once":
         try:
@@ -94,9 +109,19 @@ def notify_cmd(cmd):
 
     elif c[0].isdigit():
         return "%s %s" % get_event( int(c[0]) )
+
+    elif c[0] == "week":
+        return event_list(0, 6)
+
+    elif c[0] == "nextweek":
+        return event_list(6, 13)
+
+    elif c[0] == "month":
+        return event_list(0, 31)
     
     else:
         return "Not implemented"
 
     return "Empty"
     
+#print notify_cmd("week")
