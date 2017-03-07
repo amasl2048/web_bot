@@ -63,7 +63,9 @@ def event_list(day1, day2):
 
     report = ""
     for i in range(day1, day2):
-        report += "%s %s\n" % get_event(i)
+        when, out = get_event(i)
+        if out:
+            report += "\n%s %s" % (when, out)
     
     return report
 
@@ -124,4 +126,4 @@ def notify_cmd(cmd):
 
     return "Empty"
     
-#print notify_cmd("week")
+#print notify_cmd("month")
