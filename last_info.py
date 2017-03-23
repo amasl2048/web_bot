@@ -22,7 +22,7 @@ f.close()
 if (cur_date != last):
     report = "last reboot: " + cur_date
 
-    p = Popen(['./xsend.py', out],
+    p = Popen(['./xsend.py', report],
         stdout=PIPE,
         stderr=PIPE)
     output, err = p.communicate()
