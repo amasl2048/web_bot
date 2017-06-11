@@ -76,19 +76,19 @@ elif (key == "velo"):
 elif (key == "events_today"):
     when, report = notify.get_event(0)
     if report:
-        out = "%s %s" % (when, report)
+        out = "today: %s %s" % (when, report)
 elif (key == "events_tomorrow"):
     when, report = notify.get_event(1)
     if report:
-        out = "%s %s" % (when, report)
+        out = "tomorrow: %s %s" % (when, report)
 elif (key == "events_3days"):
     when, report = notify.get_event(3)
     if report:
-        out = "%s %s" % (when, report)
+        out = "In 3 days: %s %s" % (when, report)
 elif (key == "events_week"):
     when, report = notify.get_event(7)
     if report:
-        out = "%s %s" % (when, report)
+        out = "In a week: %s %s" % (when, report)
 
 if out:
     p = subprocess.Popen(['./xsend.py', out],
