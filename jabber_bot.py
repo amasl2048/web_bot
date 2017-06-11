@@ -1,24 +1,25 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from jabberbot import JabberBot, botcmd
+'''
+Jabber bot
+'''
 import datetime
-import yaml, os
-import sys, subprocess, re
+import os
+import sys
+import subprocess
+import re
 import hashlib
 import urllib
 import logging
+import yaml
 
+from jabberbot import JabberBot, botcmd
 from com import *
-
-'''
-Jabber bot
-
-'''
 
 # read config
 try:
-    config      = yaml.load(open("/etc/bot.config"))
-    jabber_conf = yaml.load(open("/etc/xmpp_ru.yml"))
+    config = yaml.load(open("/etc/bot.config"))
+    XCFG = yaml.load(open("/etc/xmpp_ru.yml"))
 except:
     print "Error: no config file"
     sys.exit(0)
@@ -383,9 +384,12 @@ def run_jabber():
                 return "Error"
             return str(fspl_calc.fspl(s))
 
-    username = jabber_conf["username"]
-    password = jabber_conf["password"]
-    bot = SystemInfoJabberBot(username, password)
+    bot = SystemInfoJabberBot(XCFG["username"],
+                              XCFG["password"],
+                              server=XCFG["server"],
+                              port=XCFG["port"],
+                              privatedomain=True)
+
     bot.serve_forever()
 
 def start():
@@ -396,14 +400,14 @@ def stop(): # TODO
 
 def run():
     if sys.argv[1] == "start":
-        start();
+        start()
     elif sys.argv[1] == "stop":
-        stop();
+        stop()
     elif sys.argv[1] == "restart":
-        stop();
-        start();
+        stop()
+        start()
     elif sys.argv[1] == "daemon":
-        run_jabber();
+        run_jabber()
     else:
         print("Unknown: ", sys.argv[1])
 
@@ -412,5 +416,5 @@ def run():
 if len(sys.argv) > 1:
     run()
 else:
-    print("Run with option: start | restart | daemon");
+    print("Run with option: start | restart | daemon")
 

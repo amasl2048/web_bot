@@ -3,13 +3,11 @@
 Source:
 https://dev.gajim.org/gajim/python-nbxmpp/raw/master/doc/examples/xsend.py
 '''
-
 import sys
-import os
-import nbxmpp
-import time
 import logging
 import yaml
+
+import nbxmpp
 try:
     from gi.repository import GObject as gobject
 except Exception:
@@ -65,7 +63,9 @@ class Connection:
     def connect(self):
         idle_queue = nbxmpp.idlequeue.get_idlequeue()
         self.client = nbxmpp.NonBlockingClient(self.jid.getDomain(), idle_queue, caller=self)
-        self.con = self.client.connect(self.on_connected, self.on_connection_failed, secure_tuple=('tls', '', '', None, None))
+        self.con = self.client.connect(self.on_connected, self.on_connection_failed, secure_tuple=('tls', '', '', None, None),
+                                       hostname = Conf["server"],
+                                       port = Conf["port"])
 
     def send_message(self, to_jid, text):
         id_ = self.client.send(nbxmpp.protocol.Message(to_jid, text, typ='chat'))
