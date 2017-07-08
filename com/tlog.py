@@ -109,6 +109,9 @@ def tcount(arg):
 
     txt = "%s hits: %s, hosts: %s" % (today, hits, hosts)
 
+    if arg == "error":
+        return td[td[9] > 304][8].unique() # error requests
+
     err = td[td[9] > 304][8].shape[0] # error http code
 
     stats = http_status(td[9])
@@ -120,9 +123,6 @@ def tcount(arg):
     if arg == "today":
         mkimg(txt, imgfile)
         return report
-
-    if arg == "error":
-        return td[td[9] > 304][8].unique() # error requests
 
     if arg == "warning":
         return wrn
