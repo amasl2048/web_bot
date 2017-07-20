@@ -23,21 +23,23 @@ def ticker_cmd(key):
                 if abs(float(r.json()[0]['percent_change_24h'])) >= common.config['ticker']['lim_24h'] or \
                     abs(float(r.json()[0]['percent_change_7d'])) >= common.config['ticker']['lim_7d']:
                     report += '''%s
-    %s usd
+    %s usd (%s)
     %s%% 24h
     %s%% 7d
 ''' %  (r.json()[0]['symbol'],
                 r.json()[0]['price_usd'],
+                r.json()[0][common.config["ticker"]["price"]],
                 r.json()[0]['percent_change_24h'],
                 r.json()[0]['percent_change_7d'])
 
             else:
-                 report_all += '''%s
-    %s usd
+                report_all += '''%s
+    %s usd (%s)
     %s%% 24h
     %s%% 7d
 ''' %  (r.json()[0]['symbol'],
             r.json()[0]['price_usd'],
+            r.json()[0][common.config["ticker"]["price"]],
             r.json()[0]['percent_change_24h'],
             r.json()[0]['percent_change_7d'])
 
