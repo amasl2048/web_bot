@@ -10,5 +10,5 @@ log_file = os.path.join(config["work_dir"], config["log_file"])
 
 def prnt_log(msg):
     '''Loging function'''
-    with open(log_file, "a") as f:
+    with open(log_file, "a", encoding='utf8') as f:
         f.write("[%s] %s\n" % (time.strftime("%c"), msg))
