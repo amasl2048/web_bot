@@ -1,19 +1,16 @@
 ---
 
 - hosts: d0
-  vars_files: 
+  vars_files:
     - /etc/web_server.yml
 
   tasks:
 
-  - name: stop web_server 
+  - name: stop web_server
     shell: '$HOME/web_server.py stop'
 
   - name: sync py files
     synchronize: src=~/pylab/web_bot/ dest=~/ recursive=yes times=yes perms=yes checksum=yes set_remote_user=no rsync_opts=--include=com/,--include=*.py,--exclude=*
-
-  - name: jabber service start
-    shell: '$HOME/jabber_bot.py start'
 
   - name: web service fire, wait 5 sec and forget
     shell: '$HOME/service_run.sh'
@@ -24,6 +21,12 @@
     shell: '$HOME/web_server.py psw {{secrete}}'
     no_log: True
 
+  - name: jabber service start
+    shell: '. ~/.profile; $HOME/jabber_bot.py start'
+    args:
+        executable: /bin/bash
+    async: 5
+    poll: 0
 
 
 

@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
+import sys
+import io
 import xml.etree.cElementTree as ET
 import hashlib
 import urllib2
 import time
-import sys
 import redis
 
 import common
@@ -31,6 +32,11 @@ def bbc_rss(parameter):
         sys.exit(0)
     
     rdb = redis.Redis(host="localhost", port=6379)
+
+    def prnt_log8(msg):
+        '''Loging function with utf-8'''
+        with io.open(common.log_file, "a", encoding="utf-8") as f:
+            f.write("[%s] %s\n" % (time.strftime("%c"), unicode(msg)))
     
     def txt2set(fl):
         words = []
@@ -62,7 +68,7 @@ def bbc_rss(parameter):
                 else:
                     return
                 if (my_words & set_descr):
-                    common.prnt_log(item_child.text)
+                    prnt_log8(item_child.text)
                     m = hashlib.md5()
                     m.update(item_child.text.encode("utf-8"))
                     h = m.hexdigest()
