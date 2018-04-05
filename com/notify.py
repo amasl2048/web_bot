@@ -8,6 +8,7 @@ import datetime
 
 import common
 
+
 def notify_once(dt, content):
     '''
     Store event with date and content
@@ -34,6 +35,7 @@ def notify_once(dt, content):
     rdb.zadd("notify:index", rkey, dtime.toordinal())  # Gregorian ordinal of the date
 
     return rkey, jdump
+
 
 def get_event(td):
     '''
@@ -77,6 +79,7 @@ def view_event(sdate):
 
     return report
 
+
 def del_event(hsh):
     ''' delete event with the hash '''
     
@@ -98,6 +101,24 @@ def del_event(hsh):
     return "Event %s deleted" % item
 
 
+def del_older(days):
+    ''' Delete events older than gived days '''
+
+    rdb = redis.Redis(host="localhost", port=6379)
+
+    today = datetime.date.today()
+    tday  = today.toordinal()  #; print tday  # Gregorian ordinal of the date
+
+    dmin = 1
+    dmax = tday - int(days)
+    
+    events = rdb.zrangebyscore("notify:index", dmin, dmax)
+    for event in events:
+        hsh = event[-5:]
+        del_event(hsh)
+        
+    return "Events\n %s\n are cleared" % events
+        
 def event_list(day1, day2):
     
     report = ""
@@ -130,7 +151,8 @@ def notify_cmd(cmd):
            month    - list from 0 to 31 days
            
            view <YYYY-MM-DD>  - view event raw data from the given date
-           del <HASH>         - delete event with the hash
+           del <hash>         - delete event with the hash
+           clean <days>       - delete events older than given days
 
     '''
     #common.prnt_log("notify_cmd: %s" % cmd)
@@ -166,6 +188,9 @@ def notify_cmd(cmd):
 
     elif c[0] == "del":
         return del_event(c[1])
+
+    elif c[0] == "clean":
+        return del_older(c[1])
     
     else:
         return "Not implemented"

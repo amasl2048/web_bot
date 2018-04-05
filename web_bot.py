@@ -89,6 +89,8 @@ elif (key == "events_week"):
     when, report = notify.get_event(7)
     if report:
         out = "In a week: %s %s" % (when, report)
+elif (key == "events_clean"):
+    notify.del_older(365)
 
 if out:
     p = subprocess.Popen(['./xsend.py', out],
