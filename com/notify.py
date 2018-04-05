@@ -24,14 +24,14 @@ def notify_once(dt, content):
     mh = hashlib.md5()
     mh.update(jdump)
     hinfo = mh.hexdigest()         #; print hinfo
-    key = base64.b32encode(hinfo)  #; print key
+    key = base64.b32encode(hinfo)  #; print key  # key is a content hash
     
     rdb = redis.Redis(host="localhost", port=6379)
-    rkey = "notify:" + key[:5]
+    rkey = "notify:" + key[:5]  # first 5 chars
     rdb.set(rkey, jdump)
 
     dtime = datetime.datetime.strptime(dt, "%Y-%m-%d")
-    rdb.zadd("notify:index", rkey, dtime.toordinal())
+    rdb.zadd("notify:index", rkey, dtime.toordinal())  # Gregorian ordinal of the date
 
     return rkey, jdump
 
@@ -44,10 +44,10 @@ def get_event(td):
     '''
 
     today = datetime.date.today()
-    tday  = today.toordinal() #; print tday
+    tday  = today.toordinal()  #; print tday  # Gregorian ordinal of the date
 
     rdb = redis.Redis(host="localhost", port=6379)
-    events = rdb.zrangebyscore("notify:index", tday+td, tday+td) #; print events
+    events = rdb.zrangebyscore("notify:index", tday+td, tday+td)  #; print events
 
     report = ""
     for event in events:
@@ -59,8 +59,47 @@ def get_event(td):
     return when.strftime("%a, %d %b:"), report      #TODO: utf8 report
 
 
-def event_list(day1, day2):
+def view_event(sdate):
+    ''' View event raw data from the given sdate YYYY-MM-DD'''
+    
+    try:
+        dtime = datetime.datetime.strptime(sdate, "%Y-%m-%d")
+    except:
+        return "Date format: YYYY-MM-DD"
 
+    rdb = redis.Redis(host="localhost", port=6379)
+
+    events = rdb.zrangebyscore("notify:index", dtime.toordinal(), dtime.toordinal())
+    report = ""
+    for event in events:
+        item = json.loads( rdb.get(event).decode() ) 
+        report = report + event[-5:] + ":\n" + item["content"] + "\n"
+
+    return report
+
+def del_event(hsh):
+    ''' delete event with the hash '''
+    
+    rdb = redis.Redis(host="localhost", port=6379)
+    key = "notify:" + hsh
+
+    try:
+        rdb.zrem("notify:index", key)
+    except:
+        return "Could not get index with: %s" % hsh 
+    
+    try:
+        item = json.loads( rdb.get(key).decode() ) 
+    except:
+        return "Could not get event with hash: %s" % hsh 
+
+    rdb.delete(key)
+
+    return "Event %s deleted" % item
+
+
+def event_list(day1, day2):
+    
     report = ""
     for i in range(day1, day2):
         when, out = get_event(i)
@@ -71,7 +110,7 @@ def event_list(day1, day2):
 
 
 def notify_cmd(cmd):
-    '''
+    ''' 
     notify <cmd> [options]
         cmd:
            "once" <date> <text> - one event at the date
@@ -90,7 +129,8 @@ def notify_cmd(cmd):
            nextweek - list from 7 to 13 days
            month    - list from 0 to 31 days
            
-           del      #TODO
+           view <YYYY-MM-DD>  - view event raw data from the given date
+           del <HASH>         - delete event with the hash
 
     '''
     #common.prnt_log("notify_cmd: %s" % cmd)
@@ -120,6 +160,12 @@ def notify_cmd(cmd):
 
     elif c[0] == "month":
         return event_list(0, 31)
+
+    elif c[0] == "view":
+        return view_event(c[1])
+
+    elif c[0] == "del":
+        return del_event(c[1])
     
     else:
         return "Not implemented"
