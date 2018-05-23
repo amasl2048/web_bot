@@ -1,9 +1,9 @@
-from pandas import read_csv
-from numpy import timedelta64
-import time, datetime
+import time
+import datetime
 import re
 import shutil
-import yaml, os
+import pandas as pd
+from numpy import timedelta64
 
 import common
 '''
@@ -18,14 +18,14 @@ velo_cmd("velo stat")
 
 # read config
 
-debug   = common.config["velo"]["debug"]
-csvfile = common.config["velo"]["csvfile"]
-work    = common.config["velo"]["work"]
+DEBUG = common.config["velo"]["debug"]
+CSV = common.config["velo"]["csvfile"]
+WORK = common.config["velo"]["work"]
 
 t_year = int(time.strftime("%Y")) # this year
 
-if debug:
-    common.prnt_log("velo work: %s" % work)
+if DEBUG:
+    common.prnt_log("velo work: %s" % WORK)
 
 def str2time(Series):
     patt = re.compile("(\d+):(\d+)")
@@ -48,7 +48,7 @@ def dec2min(hours):
     return "%sh %sm" % (h, int(60 * m) )
 
 def velo_stat(csvfile, year):
-    df_all = read_csv(csvfile, sep='\t', header=0, index_col=0, parse_dates=[1])
+    df_all = pd.read_csv(csvfile, sep='\t', header=0, index_col=0, parse_dates=[1])
     #st_all = df_all["date"].size
     today = datetime.datetime.today()
     # filter only this year
@@ -80,7 +80,7 @@ Velo:\teach %s days
     return out
 
 def velo_top(csvfile):
-    df_all = read_csv(csvfile, sep='\t', header=0, index_col=0, parse_dates=[1])
+    df_all = pd.read_csv(csvfile, sep='\t', header=0, index_col=0, parse_dates=[1])
     # more distance
     report = str(df_all.sort(["km"], ascending=False)[:3][["date", "km"]])
 
@@ -96,21 +96,21 @@ def velo_top(csvfile):
     return report
 
 def velo_last(csvfile):
-    df_all = read_csv(csvfile, sep='\t', header=0, index_col=0, parse_dates=[1])
-    id = df_all.sort(["date"]).index.tolist()[-1]
-    report = str(df_all.loc[id])
+    df_all = pd.read_csv(csvfile, sep='\t', header=0, index_col=0, parse_dates=[1])
+    ids = df_all.sort(["date"]).index.tolist()[-1]
+    report = str(df_all.loc[ids])
 
     # longest time
     df_all["timedelta"] = df_all["time"].map(str2time)
     ltime = df_all.sort(["timedelta"], ascending=False)
     for i, elem in enumerate(ltime.index.tolist()):
-        if elem == id:
+        if elem == ids:
             report += "\nRate:\n %s for time" % str(i+1)
     
     # distance
     distance = df_all.sort(["km"], ascending=False)
     for i, elem in enumerate(distance.index.tolist()):
-        if elem == id:
+        if elem == ids:
             report += "\n %s for distance" % str(i+1)
     
     # speed
@@ -118,21 +118,23 @@ def velo_last(csvfile):
     df_all["speed"] = df_all.km / df_all.hours 
     speed = df_all.sort(["speed"], ascending=False)
     for i, elem in enumerate(speed.index.tolist()):
-        if elem == id:
-            report += "\n %s for speed %s" % (str(i+1), str(round(df_all["speed"].loc[id],1)))
+        if elem == ids:
+            report += "\n %s for speed %s" % (str(i+1), str(round(df_all["speed"].loc[ids],1)))
 
     return report
     
-def velo_add(csvfile, t, km):
+def velo_add(csvfile, today, t, km):
+
     ptime = re.compile("^\d{1,2}:\d{2}$")
     if not ptime.search(t):
         return "Error time"
+    
     pkm = re.compile("^\d+\.?\d{0,2}$")
     if not pkm.search(km):
         return "Error km"
 
-    df = read_csv(csvfile, sep='\t', header=0, index_col=0, parse_dates=[1,2])
-    today = datetime.date.today()
+    df = pd.read_csv(csvfile, sep='\t', header=0, index_col=0, parse_dates=[1,2])
+    #today = datetime.date.today()
     s = df["date"].size
 
     shutil.copy2(csvfile, csvfile + "~")
@@ -147,33 +149,47 @@ def velo_cmd(cmd):
     velo <cmd> <options>
       cmd:  
         "add <h:mm> <km>"  - adding new data to csv
+        "date <yyyy-mm-dd> <h:mm> <km>" - adding new data for the date
         "help" - print help
         "stat [year]" - return velo statistics for the year
         "work" - add default time/distance to work
         "top" - the best achievement
         "last" - last item
     '''
-    if debug:
+    if DEBUG:
         common.prnt_log("velo %s" % cmd)
 
     if cmd == "":
-        cmd = "stat" 
+        cmd = "stat"
     c = cmd.split()
+
     if c[0] == "stat":
         if len(c) == 2:
-            return velo_stat(csvfile, int(c[1]))
-        return velo_stat(csvfile, t_year)
+            return velo_stat(CSV, int(c[1]))
+        return velo_stat(CSV, t_year)
     elif c[0] == "help":
         return velo_cmd.__doc__
     elif c[0] == "top":
-        return velo_top(csvfile)
+        return velo_top(CSV)
     elif c[0] == "last":
-        return velo_last(csvfile)
+        return velo_last(CSV)
+
     elif c[0] == "work":
-        return velo_add(csvfile, work[0], work[1])
+        tod = datetime.date.today()
+        return velo_add(CSV, str(tod), WORK[0], WORK[1])
+
     elif c[0] == "add":
         if len(c) != 3:
-            return "Error"
-        return velo_add(csvfile, c[1], c[2])
+            return "Error add"
+        tod = datetime.date.today()
+        return velo_add(CSV, str(tod), c[1], c[2])
+
+    elif c[0] == "date":
+        if len(c) != 4:
+            return "Error date args"
+        ptd = re.compile("^\d{4}-\d{2}-\d{2}$")
+        if not ptd.search(c[1]):
+            return "Error date"
+        return velo_add(CSV, c[1], c[2], c[3])
 
 #print velo_cmd("last")

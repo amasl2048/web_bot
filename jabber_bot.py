@@ -60,7 +60,7 @@ def run_jabber():
             return False
 
         def check_cmd( self, arg):
-            r = re.compile(r"^[a-z0-9.:\s]+$")
+            r = re.compile(r"^[a-z0-9.:\s-]+$")
             if ( (len(arg) < 256) and (r.search(arg.strip())) ):
                 return True
             return False
@@ -293,7 +293,7 @@ def run_jabber():
                 s = str(args).strip()
                 #print s
             else:
-                return "Error"
+                return "Error args"
             return str(velo.velo_cmd(s))
 
         @botcmd
