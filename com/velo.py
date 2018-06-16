@@ -56,9 +56,9 @@ def velo_stat(csvfile, year):
     st = df["date"].size
     if st == 0:
         return "Null"
-    df["timedelta"] = df["time"].map(str2time)
-    #ttime = df["timedelta"].sum()
-    ttime = df["timedelta"].sum()/1000/1000/1000/60/60. # hack
+    df.loc[:,("timedelta")] = df["time"].map(str2time)
+    ttime = df["timedelta"].sum()  # for python 2.7.12
+    #ttime = df["timedelta"].sum()/1000/1000/1000/60/60.  # hack for python 2.7.6
     '''
     In old python 2.7.6 the dtype of 'timedelta' is numpy.int64 instead of timedelta.
     In python 2.7.12 timedelta.sum() returns timedelta
@@ -70,8 +70,8 @@ Avg:\t%s km per day
 Last:\t%s days
 Velo:\teach %s days
 """  % (df["km"].sum(), st,
-    #td2min(ttime),
-    dec2min(ttime),
+    td2min(ttime),    # for python 2.7.12
+    #dec2min(ttime),  # for python 2.7.6
     round(df["km"].mean(), 1),
     (today - df.loc[df.index.tolist()[-1], "date"]).days, # last item
     (today - df.loc[df.index.tolist()[0], "date"]).days / st # first item
@@ -82,33 +82,33 @@ Velo:\teach %s days
 def velo_top(csvfile):
     df_all = pd.read_csv(csvfile, sep='\t', header=0, index_col=0, parse_dates=[1])
     # more distance
-    report = str(df_all.sort(["km"], ascending=False)[:3][["date", "km"]])
+    report = str(df_all.sort_values(by="km", ascending=False)[:3][["date", "km"]])
 
     # longest time
     df_all["timedelta"] = df_all["time"].map(str2time)
-    report += "\n" + str( df_all.sort(["timedelta"], ascending=False)[:3][["date", 'time']])
+    report += "\n" + str( df_all.sort_values(by="timedelta", ascending=False)[:3][["date", 'time']])
 
     # fastest speed
     df_all["hours"] = df_all.timedelta / timedelta64(1, "h")
     df_all["speed"] = df_all.km / df_all.hours 
-    report += "\n" + str(df_all.sort(["speed"], ascending=False)[:3][["date", "time", "km", "speed"]])
+    report += "\n" + str(df_all.sort_values(by="speed", ascending=False)[:3][["date", "time", "km", "speed"]])
     
     return report
 
 def velo_last(csvfile):
     df_all = pd.read_csv(csvfile, sep='\t', header=0, index_col=0, parse_dates=[1])
-    ids = df_all.sort(["date"]).index.tolist()[-1]
+    ids = df_all.sort_values(by="date").index.tolist()[-1]
     report = str(df_all.loc[ids])
 
     # longest time
     df_all["timedelta"] = df_all["time"].map(str2time)
-    ltime = df_all.sort(["timedelta"], ascending=False)
+    ltime = df_all.sort_values(by="timedelta", ascending=False)
     for i, elem in enumerate(ltime.index.tolist()):
         if elem == ids:
             report += "\nRate:\n %s for time" % str(i+1)
     
     # distance
-    distance = df_all.sort(["km"], ascending=False)
+    distance = df_all.sort_values(by="km", ascending=False)
     for i, elem in enumerate(distance.index.tolist()):
         if elem == ids:
             report += "\n %s for distance" % str(i+1)
@@ -116,7 +116,7 @@ def velo_last(csvfile):
     # speed
     df_all["hours"] = df_all.timedelta / timedelta64(1, "h")
     df_all["speed"] = df_all.km / df_all.hours 
-    speed = df_all.sort(["speed"], ascending=False)
+    speed = df_all.sort_values(by="speed", ascending=False)
     for i, elem in enumerate(speed.index.tolist()):
         if elem == ids:
             report += "\n %s for speed %s" % (str(i+1), str(round(df_all["speed"].loc[ids],1)))
@@ -192,4 +192,8 @@ def velo_cmd(cmd):
             return "Error date"
         return velo_add(CSV, c[1], c[2], c[3])
 
-#print velo_cmd("last")
+'''
+print velo_cmd("last")
+print velo_cmd("stat")
+print velo_cmd("top")
+'''
