@@ -64,7 +64,7 @@ def velo_stat(csvfile, year):
     In python 2.7.12 timedelta.sum() returns timedelta
     '''
 
-    out = """Totaly:\t%s km %s times
+    out = """Totaly:\t%.1f km %s times
 Time:\t%s
 Avg:\t%s km per day
 Last:\t%s days
